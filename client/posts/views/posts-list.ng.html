@@ -1,0 +1,33 @@
+<md-content name="postsList" layout="row" layout-sm="column">
+  <md-fab-speed-dial class="md-fab-top-right">
+      <md-fab-trigger>
+        <md-button  class="md-fab md-fab-right md-accent" aria-label="{{ 'ADD' | translate }} {{ 'POST' | translate }}" 
+            ng-click="addPost();">
+            <md-tooltip md-direction="left">
+                {{ 'CLICK_TO_ADD' | translate }} {{ 'POST' | translate | lowercase }}
+            </md-tooltip>
+            <md-icon md-font-set="material-icons"> add </md-icon>
+        </md-button>
+      </md-fab-trigger>
+    </md-fab-speed-dial>
+    <div flex="40" layout-padding layout-margin layout-wrap layout-fill style="padding-bottom: 32px;" ng-cloak>
+        <loading count="postsCount.count"></loading>
+        <md-list>
+          <md-list-item dir-paginate="post in posts | itemsPerPage: perPage" total-items="postsCount.count"
+              class="md-3-line" ng-show="postsCount.count>0"
+              ng-class="{ 'active-light': post._id == currentPostId }">
+              <md-icon md-font-set="material-icons">comment</md-icon>
+              <div class="md-list-item-text">
+                <h3><a href="" ng-click="displayPost(post._id)">{{ post.title }}</a></h3>
+                <p>{{ post.body }}</p>
+                <span class="md-caption">[{{ post.by.emails[0].address }} {{ post.date | date:'medium' }}]</span>
+              </div>
+          </md-list-item>
+        </md-list>
+        <div layout="row">
+          <dir-pagination-controls template-url="client/lib/pagination-tmpl.ng.html" 
+              on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
+        </div>
+    </div>
+    <postdetails flex></postdetails>
+</md-content>

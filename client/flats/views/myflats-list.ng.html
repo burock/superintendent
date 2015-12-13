@@ -1,0 +1,16 @@
+<md-content ng-cloak layout="row" layout-sm="column">
+    <div flex="40" layout-padding layout-margin layout-wrap layout-fill style="padding-bottom: 32px;">
+        <loading count="flatsCount"></loading>
+        <md-grid-list md-cols-sm="1" md-cols-md="2" md-cols-gt-md="6"  ng-show="flatsCount>0"
+        md-row-height-gt-md="1:1" md-row-height="2:2"
+        md-gutter="12px" md-gutter-gt-sm="8px" layout-align="space-around center">
+              <md-grid-tile class="gray"  md-rowspan="2" md-colspan="2"
+                    ng-repeat="flat in flats">
+                  <span class="md-caption" layout-align="start start">{{ flat.flatOwner }}</span>
+                  <md-grid-tile-footer layout-align="center center">
+                      <p class='tile-footer'>{{ 'FLAT'|translate|uppercase}} : {{ flat.no }}</p>
+                    </md-grid-tile-footer>
+              </md-grid-tile>
+          </md-grid-list>
+      </div>
+</md-content>

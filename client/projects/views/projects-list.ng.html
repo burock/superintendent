@@ -1,0 +1,41 @@
+<md-content name="postsList" layout="row" layout-sm="column">
+  <md-fab-speed-dial class="md-fab-top-right">
+      <md-fab-trigger>
+        <md-button  class="md-fab md-fab-right md-accent" aria-label="{{ 'ADD' | translate }} {{ 'PROJECT' | translate }}" 
+            ng-click="addProject();">
+            <md-tooltip md-direction="left">
+                {{ 'CLICK_TO_ADD' | translate }} {{ 'PROJECT' | translate | lowercase }}
+            </md-tooltip>
+            <md-icon md-font-set="material-icons"> add </md-icon>
+        </md-button>
+      </md-fab-trigger>
+    </md-fab-speed-dial>
+    <div flex="40" layout-padding layout-margin layout-wrap layout-fill style="padding-bottom: 32px;" ng-cloak>
+        <div layout="row">
+          <md-input-container class="md-icon-float md-block">
+            <label>{{ 'SEARCH_WORD' | translate }} </label>
+            <md-icon md-font-set="material-icons"> search </md-icon>
+            <input ng-model="filterProjects" />
+          </md-input-container>
+          <input type="hidden" ng-model="filterProjectId" />
+          <md-button class="md-icon-button my-button " ng-click="clearSearch()">
+                <md-tooltip direction="top">
+                            {{ 'CLEAR_SEARCH' | translate }}
+                </md-tooltip>
+              <md-icon md-font-set="material-icons">clear</md-icon>
+          </md-button>
+        </div>
+        <md-list ng-show="projectsCount>0">
+          <md-list-item  class="md-3-line" ng-repeat="project in projects | filter:finished"
+              ng-class="{ 'active-light': project._id == currentProjectId }" >
+              <md-icon md-font-set="material-icons">build</md-icon>
+              <div class="md-list-item-text">
+                <h3><a href="" ng-click="displayProject(project._id)">{{ project.title }}</a></h3>
+                <p>{{ project.detail }}</p>
+                <p class="md-caption">{{ project.cost + building.currency }} [{{ project.startDate | date:'small' }}]</p>
+              </div>
+          </md-list-item>
+        </md-list>
+      </div>
+    <projectdetails flex></projectdetails>
+</md-content>

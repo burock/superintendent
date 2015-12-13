@@ -1,0 +1,55 @@
+<head>
+  <title translate="APPNAME">Super</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base href="/">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="icon" href="/favicon.ico">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.9.5/chartist.min.css" rel="stylesheet">
+</head>
+<body ng-app="super">
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.9.5/chartist.min.js"></script>
+     <header>
+        <md-toolbar md-scroll-shrink>
+          <div layout-align="start center" class="md-toolbar-tools">
+            <img src="/img/s.svg.png" />
+            <h3>
+              SuperIntendent
+            </h3>
+            <span flex></span>
+            <md-button  ui-sref-active="active" ui-sref="dashboard"  ng-click="vacuum()">
+              <md-icon md-font-set="material-icons">dashboard</md-icon>
+              {{ 'DASHBOARD' | translate }}
+            </md-button>
+            <md-button  ui-sref-active="active" ui-sref="buildings" ng-click="vacuum()">
+              <md-icon md-font-set="material-icons">location_city</md-icon>
+              {{ 'BUILDINGS' | translate }}
+            </md-button>
+            <md-button  ui-sref-active="active" ui-sref="login" ng-hide="currentUser">
+              <md-icon md-font-set="material-icons">archive</md-icon>
+              {{ 'LOGIN' | translate }}
+            </md-button>
+            <md-button  ui-sref-active="active" ui-sref="register" ng-hide="currentUser">
+              <md-icon md-font-set="material-icons">create</md-icon>
+              {{ 'REGISTER' | translate }}
+            </md-button>          
+            <md-button  ui-sref-active="active" ui-sref="logout" ng-show="currentUser">
+              <md-icon md-font-set="material-icons">unarchive</md-icon>
+              {{ 'LOGOUT' | translate }}
+            </md-button>
+            </div>
+        </md-toolbar>
+      </header>
+      <md-content layout="row" ng-controller="NavCtrl as vm">
+            <md-sidenav md-scroll-shrink class="md-sidenav-left gray-green" ng-show="building"
+              md-component-id="left"  md-is-locked-open="$mdMedia('gt-md')">
+                <ul class="side-menu {{section.customclass}}">
+                  <li ng-repeat="section in sections" class="parent-list-item"
+                      ng-class="{'parentActive' : vm.isSectionSelected(section)}">
+                    <menu-link building="building" section="section" ng-if="section.type === 'link'"></menu-link>
+                  </li>
+                </ul>
+            </md-sidenav>
+            <md-content ui-view layout="column" flex>
+            </md-content>
+      </md-content>
+</body>

@@ -1,0 +1,29 @@
+<md-content ng-cloak layout="row" layout-sm="column">
+    <md-fab-speed-dial class="md-fab-top-right">
+      <md-fab-trigger>
+        <md-button  class="md-fab md-fab-right md-accent" aria-label="{{ 'ADD' | translate }} {{ 'FLAT' | translate }}" 
+            ng-click="addFlat();">
+            <md-tooltip md-direction="left">
+                {{ 'CLICK_TO_ADD' | translate }} {{ 'FLAT' | translate }}
+            </md-tooltip>
+            <md-icon md-font-set="material-icons"> add </md-icon>
+        </md-button>
+      </md-fab-trigger>
+    </md-fab-speed-dial>
+    <div flex="40" layout-padding layout-margin layout-wrap layout-fill style="padding-bottom: 32px;">
+        <loading count="flatsCount"></loading>
+        <md-grid-list md-cols-sm="1" md-cols-md="2" md-cols-gt-md="6"  ng-show="flatsCount>0"
+        md-row-height-gt-md="1:1" md-row-height="2:2"
+        md-gutter="12px" md-gutter-gt-sm="8px" layout-align="space-around center">
+              <md-grid-tile class="gray"  md-rowspan="2" md-colspan="2"
+                    ng-class="{ active: flat._id == currentFlatId }" ng-click="displayFlat(flat._id)"
+                    ng-repeat="flat in flats">
+                  <span class="md-caption" layout-align="start start">{{ flat.flatOwner }}</span>
+                  <md-grid-tile-footer layout-align="center center">
+                      <p class='tile-footer'>{{ 'FLAT'|translate|uppercase}} : {{ flat.no }}</p>
+                    </md-grid-tile-footer>
+              </md-grid-tile>
+          </md-grid-list>
+      </div>
+      <flatdetails flex="50"></flatdetails> 
+</md-content>

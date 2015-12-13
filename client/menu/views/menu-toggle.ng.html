@@ -1,0 +1,11 @@
+<md-button class="md-button-toggle {{section.customclass}} md-accent" ng-click="toggle()" 
+           aria-controls="side-menu-{{section.name | nospace}}" flex layout="row" aria-expanded="{{isOpen()}}">
+    <md-icon md-font-set="material-icons">{{section.icon}}</md-icon>
+     {{section.name | translate }}
+    <span aria-hidden="true" class="pull-right md-toggle-icon" ng-class="{ toggled : isOpen()}"></span>
+</md-button>
+<ul ng-show="isOpen()" id="side-menu-{{section.name | nospace}}" class="menu-toggle-list">
+    <li ng-repeat="page in section.pages">
+        <menu-link section="page"></menu-link>
+    </li>
+</ul>

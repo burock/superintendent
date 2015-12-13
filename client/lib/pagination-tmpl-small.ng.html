@@ -1,0 +1,11 @@
+<div layout="row">
+<md-button href="" title="Previous page" ng-class="{ disabled : pagination.current == 1 }" 
+ng-click="setCurrent(pagination.current - 1)" class="md-icon-button">
+    <md-icon md-font-set="material-icons" class="font-white">arrow_back</md-icon>
+</md-button>
+<md-button href="" title="Next page"  
+ng-class="{ disabled : pagination.current == pagination.last }" 
+ng-click="setCurrent(pagination.current + 1)"  class="md-icon-button font-white">
+    <md-icon md-font-set="material-icons" class="font-white">arrow_forward</md-icon>
+</md-button>
+</div>

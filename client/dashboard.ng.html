@@ -1,0 +1,90 @@
+<md-content layout="column" ng-cloak ng-controller="DashboardCtrl">
+    <md-content class="silver" layout-padding layout="row" layout-align="start center">
+            <md-input-container>
+            <label>{{ 'BUILDING' | translate }}</label>
+            <md-select style="min-width: 200px;" ng-model="building" ng-change="display()">
+                <md-option ng-value="building" ng-repeat="building in buildings">{{ building.name }}</md-option>
+            </md-select>
+            </md-input-container>
+            <div flex="5"></div>
+            <md-datepicker class="silver" md-placeholder="{{ 'FROM' | translate }}" ng-model="start" ></md-datepicker>
+            <div flex="5"></div>
+            <md-datepicker class="silver" md-placeholder="{{ 'TO' | translate }}" ng-model="end"></md-datepicker>
+            <div flex="5"></div>
+            <md-button ng-click="dashMe()">
+                <md-icon md-font-set="material-icons">refresh</md-icon>
+            </md-button>
+            <div flex="1"></div>
+            <md-button ng-click="resetFilter()">
+                <md-icon md-font-set="material-icons">clear</md-icon>
+            </md-button>
+    </md-content>
+    <md-content layout-padding layout-margin ng-show="processed">
+        <md-grid-list 
+                md-cols-sm="1" md-cols-md="3" md-cols-gt-md="4"
+                md-row-height-gt-md="1:1" md-row-height="2:2"
+                md-gutter="36px" md-gutter-gt-sm="16px" >
+            <md-grid-tile class="dark">
+                <div class="ct-chart ct-golden-section" flex></div>
+                <md-grid-tile-footer>
+                    <h3>{{ 'PROJECTS' | translate }} &amp; {{ 'CASHFLOWS' | translate}}</h3>
+                </md-grid-tile-footer>
+            </md-grid-tile>
+            
+            <md-grid-tile class="beige">
+                <md-grid-tile-header layout-align="start center" >
+                    <h3 class="font-dark">{{ 'BALANCE' | translate }} {{ sumCash + sumProject }}</h3>
+                </md-grid-tile-header>
+                <div class="" layout-padding layout="column" layout-align="start start" flex="100" style="top: 10; left:10">
+                         <div layout-padding layout="row" style="width:100%" layout-align="end center">
+                            <div><md-icon md-font-set="material-icons" class="">payment</md-icon></div>
+                            <div style="width:10px"></div>
+                            <h4>{{ 'EXPENSES' | translate }}</h4><div flex></div>
+                            <div class="md-title">{{ expenses }}</div>
+                          </div>
+                          <md-divider class="dark"></md-divider>
+                          <div layout-padding layout="row" style="width:100%" layout-align="end center">
+                            <div><md-icon md-font-set="material-icons" class="">local_atm</md-icon></div>
+                            <div style="width:10px"></div>
+                            <h4>{{ 'DUES' | translate }}</h4>
+                            <div flex></div>
+                            <div class="md-title" layout-align="end center">{{ dues }}</div>
+                          </div>
+                          <md-divider class="dark"></md-divider>
+                          <div  layout-padding layout="row" style="width:100%" layout-align="end center">
+                            <div><md-icon  md-font-set="material-icons" class="">receipt</md-icon></div>
+                            <div style="width:10px"></div>
+                            <h4>{{ 'MISSING_DUES' | translate }}</h4><div flex></div>
+                            <div class="md-title">{{ missingDues }}</div>
+                          </div>
+                </div>
+                <md-grid-tile-footer layout-align="start center" >
+                    <h3 class="font-dark">{{ 'FIGURES' | translate }}</h3>
+                </md-grid-tile-footer>
+            </md-grid-tile>
+            
+            <md-grid-tile class="red" layout="column" layout-align="start start">
+                <md-list flex="100">
+                      <md-list-item dir-paginate="post in posts | itemsPerPage: perPage" total-items="postsCount.count"
+                          class="md-3-line font-white">
+                          <md-icon md-font-set="material-icons" class="font-white">comment</md-icon>
+                          <div class="md-list-item-text">
+                            <h4><a href="" ng-click="displayPost(post._id)">{{ post.title }}</a></h4>
+                            <p>{{ post.body.substr(0,20) + '...' }}</p>
+                            <span class="md-caption">[{{ post.date | date:'medium' }}]</span>
+                          </div>
+                          <md-divider ng-if="!$last"></md-divider>
+                      </md-list-item>
+                  </md-list>
+              <md-grid-tile-footer flex>
+                <div flex="100" layout="row" layout-align="start center">
+                   <h3>{{ 'POSTS' | translate }}</h3>
+                   <span flex="70"></span>
+                   <dir-pagination-controls template-url="client/lib/pagination-tmpl-small.ng.html" 
+                        on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
+                </div>
+              </md-grid-tile-footer>
+            </md-grid-tile>
+        </md-grid-list>
+    </md-content>
+</md-content>

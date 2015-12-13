@@ -1,0 +1,70 @@
+<div layout="row" layout-sm="column" ng-show="flat" class="md-whiteframe-4dp" layout-padding layout-margin>
+    <div flex ng-cloak class="md-inline-form" >
+        <md-content>
+            <form name="flatForm">
+                <div layout layout-sm="column">
+                    <md-input-container class="md-block">
+                        <label>{{ 'NR' | translate }}</label>
+                        <input ng-type="" ng-model="flat.no" required />
+                        <span class="error" ng-show="flatForm.input.$error.required">{{ 'REQUIRED' | translate }}</span>
+                        <br />
+                    </md-input-container>
+                    <md-input-container class="md-block">
+                        <label>{{ 'PHONE' | translate }}</label>
+                        <input ng-model="flat.phone" ng-type="phone" required />
+                        <span class="error" ng-show="flatForm.input.$error.required">{{ 'REQUIRED' | translate }}</span>
+                        <br />
+                    </md-input-container>
+                </div>
+                <div layout layout-sm="column">
+                    <md-input-container class="md-block">
+                        <label>{{ 'FLAT_OWNER' | translate }}</label>
+                        <input ng-type="" ng-model="flat.flatOwner" required />
+                        <span class="error" ng-show="flatForm.input.$error.required">{{ 'REQUIRED' | translate }}</span>
+                        <br />
+                    </md-input-container>
+                    <md-input-container class="md-block">
+                        <label>{{ 'FLAT_OWNER_EMAIL' | translate }}</label>
+                        <input ng-model="flat.flatOwnerEmail" ng-type="email" required />
+                        <span class="error" ng-show="flatForm.input.$error.required">{{ 'REQUIRED' | translate }}</span>
+                        <br />
+                    </md-input-container>
+                </div>
+                <div layout layout-sm="column">
+                    <md-input-container class="md-block">
+                        <label>{{ 'TENANT' | translate }}</label>
+                        <input ng-type="" ng-model="flat.tenant" required />
+                        <span class="error" ng-show="flatForm.input.$error.required">{{ 'REQUIRED' | translate }}</span>
+                        <br />
+                    </md-input-container>
+                    <md-input-container class="md-block">
+                        <label>{{ 'TENANT_EMAIL' | translate }}</label>
+                        <input ng-model="flat.tenantEmail"  ng-type="email"  required />
+                        <span class="error" ng-show="flatForm.input.$error.required">{{ 'REQUIRED' | translate }}</span>
+                        <br />
+                    </md-input-container>
+                </div>
+                 <div layout layout-sm="column">
+                    <md-input-container class="md-block">
+                        <label>{{ 'DUES' | translate }}</label>
+                        <input type="number" ng-model="flat.dues" />
+                        <br />
+                    </md-input-container>
+                    <md-input-container class="md-block">
+                    </md-input-container>
+                </div>
+                <div layout="row" flex layout-align="end center">
+                    <md-button class="md-button md-accent" ng-click="saveFlat()">
+                        <md-icon aria-label="{{ 'SAVE' | translate }}" md-font-set="material-icons">save</md-icon>
+                    </md-button>
+                    <!--<md-button class="md-button md-accent" ng-click="resetFlat()">
+                        <md-icon aria-label="{{ 'UNDO' | translate }}" md-font-set="material-icons">undo</md-icon>
+                    </md-button>-->
+                    <md-button class="md-button md-accent" ng-click="deleteFlat(flat)">
+                        <md-icon aria-label="{{ 'DELETE' | translate }}" md-font-set="material-icons">delete</md-icon>
+                    </md-button>
+                </div>
+            </form>
+        </md-content>
+    </div>
+</div>

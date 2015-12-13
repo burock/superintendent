@@ -1,0 +1,53 @@
+<md-content layout="row" layout-sm="column" flex>
+  <md-fab-speed-dial class="md-fab-top-right">
+      <md-fab-trigger>
+        <md-button  class="md-fab md-fab-right md-accent" aria-label="{{ 'ADD' | translate }} {{ 'CASHFLOW' | translate }}" 
+            ng-click="addnew();">
+            <md-tooltip md-direction="left">
+                {{ 'CLICK_TO_ADD' | translate }} {{ 'CASHFLOW' | translate }}
+            </md-tooltip>
+            <md-icon md-font-set="material-icons"> add </md-icon>
+        </md-button>
+      </md-fab-trigger>
+    </md-fab-speed-dial>
+    <div flex="40" layout-padding layout-margin layout-wrap layout-fill style="padding-bottom: 32px;" ng-cloak>
+        <loading count="cashflowsCount.count"></loading>
+        <div layout="row">
+          <md-input-container class="md-icon-float md-block">
+            <label>{{ 'SEARCH_WORD' | translate }} </label>
+            <md-icon md-font-set="material-icons"> search </md-icon>
+            <input ng-model="filterCashflows" />
+          </md-input-container>
+          <input type="hidden" ng-model="filterCashflowId" />
+            <md-button class="md-icon-button my-button " ng-click="clearSearch()">
+                <md-tooltip direction="top">
+                            {{ 'CLEAR_SEARCH' | translate }}
+                </md-tooltip>
+                <md-icon md-font-set="material-icons">clear</md-icon>
+            </md-button>
+        </div>
+        <table class="md-table md-table--bordered"  ng-show="cashflowsCount.count>0">
+          <thead>
+            <th>&nbsp;</th>
+            <th>{{ 'DESCRIPTION' | translate }}</th>
+            <th>{{ 'AMOUNT' | translate }}</th>
+            <th>{{ 'DATE' | translate }}</th>
+          </thead>
+          <tbody>
+          <tr dir-paginate="cashflow in cashflows | itemsPerPage: perPage" total-items="cashflowsCount.count"
+              ng-class="{ active: cashflow._id == currentCashflowId }" 
+              ng-href="" ng-click="displayCashflow(cashflow._id)">
+             <td><md-icon  md-font-set="material-icons" ng-class="{ 'md-warn' : cashflow.paid }">{{ cashflow.paid?'check':'' }} </md-icon></td>
+             <td>{{ cashflow.description }}</td>
+             <td align="right">{{ cashflow.amount }}</td>
+             <td align="center">{{ cashflow.date | date:'medium'  }}</td>
+          </tr>
+          </tbody>
+        </table>
+        <div layout="row">
+          <dir-pagination-controls template-url="client/lib/pagination-tmpl.ng.html" 
+              on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
+        </div>
+    </div>
+    <cashflowdetails flex></cashflowdetails>
+</md-content>

@@ -1,0 +1,38 @@
+<md-content layout="row" layout-align="center center">
+  <md-whiteframe class="md-whiteframe-1dp gray" layout="column" layout-align="center center" flex="40">
+    <div layout="row" layout-align="start center">
+      <h3>{{ 'SIGNUP' | translate }}</h3>
+    </div>
+    <div ng-show="rc.error" class="md-warn">
+      <small>{{ rc.error }}</small>
+    </div>
+    <form layout="column">
+      <md-input-container class="md-icon-float md-block">
+        <label>{{ 'EMAIL' | translate }}</label>
+        <md-icon md-font-set="material-icons" class="md-accent">email</md-icon>
+        <input type="text" ng-model="rc.credentials.email" />
+      </md-input-container>
+           <md-select ng-model="rc.credentials.profile.language" placeHolder="{{ 'LANGUAGE' | translate }}">
+              <md-option value="tr">{{ 'TURKISH' | translate }}</md-option>
+              <md-option value="en">{{ 'ENGLISH' | translate }}</md-option>
+              <md-option value="al">{{ 'ALBANIAN' | translate }}</md-option>
+            </md-select>
+      <md-input-container class="md-icon-float md-block">
+        <label>{{ 'PASSWORD' | translate }}</label>
+        <md-icon md-font-set="material-icons" class="md-accent">lock_open</md-icon>
+        <input type="password" ng-model="rc.credentials.password" />
+      </md-input-container>
+      <section layout="row" layout-align="end center" layout-wrap>
+        <md-button class="md-primary md-mini" ng-click="rc.register()">
+          {{ 'CREATE_ACCOUNT' | translate }}
+        </md-button>
+      </section>
+    </form>
+    <div layout="row" layout-align="center center">
+      <span>{{ 'ALREADY_USER' | translate }}</span>
+      <md-button class="md-primary" ng-href="/login">
+        {{ 'LOGIN' | translate }}
+      </md-button>
+    </div>
+  </md-whiteframe>
+</md-content>

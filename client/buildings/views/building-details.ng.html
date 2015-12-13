@@ -1,0 +1,96 @@
+<div layout="row" layout-sm="column"  ng-show="building" class="md-whiteframe-4dp" layout-padding layout-margin>
+    <div flex ng-cloak class="md-inline-form">
+            <md-content layout="row" layout-sm="column">
+                <div flex>    
+                    <form name="buildingForm">
+                        <div layout layout-sm="column">
+                            <md-input-container class="md-block">
+                                <label>{{ 'NAME' | translate }}</label>
+                                <input ng-model="building.name" required><span class="error" ng-show="buildingForm.input.$error.required">{{ 'REQUIRED' | translate }}</span>
+                            </md-input-container>
+                            <md-select ng-model="building.currency" placeHolder="{{ 'CURRENCY' | translate }}">
+                                <md-option>TRY</md-option>
+                                <md-option>USD</md-option>
+                                <md-option>EUR</md-option>
+                                <md-option>RUB</md-option>
+                            </md-select>
+                        </div>
+                        <div layout layout-sm="column">
+                            <md-input-container class="md-block">
+                                <label>{{ 'NO' | translate }}</label>
+                                <input ng-type="" ng-model="building.no" required><span class="error" ng-show="buildingForm.input.$error.required">{{ 'REQUIRED' | translate }}</span>
+                                <br>
+                            </md-input-container>
+                            <md-input-container class="md-block">
+                                <label>{{ 'STREET' | translate }}</label>
+                                <input ng-model="building.street" required><span class="error" ng-show="buildingForm.input.$error.required">{{ 'REQUIRED' | translate }}</span>
+                                <br>
+                            </md-input-container>
+                        </div>
+                        <div layout layout-sm="column">
+                            <md-input-container class="md-block">
+                                <label>{{ 'COUNTY' | translate }}</label>
+                                <input ng-model="building.county" required><span class="error" ng-show="buildingForm.input.$error.required">{{ 'REQUIRED' | translate }}</span>
+                                <br>
+                            </md-input-container>
+                            <md-input-container>
+                                <label>{{ 'ZIPCODE' | translate }}</label>
+                                <input ng-model="building.zip"  ng-pattern="/^[0-9]{5}$/"  required><span class="error" ng-show="buildingForm.input.$error.required">Required!</span>
+                                <br>
+                            </md-input-container>
+                        </div>
+                        <div layout layout-sm="column">
+                            <md-input-container>
+                                <label>{{ 'TOWN' | translate }}</label>
+                                <input ng-model="building.town" required><span class="error" ng-show="buildingForm.input.$error.required">{{ 'REQUIRED' | translate }}</span>
+                                <br>
+                            </md-input-container>
+                                <md-select ng-model="building.country" placeHolder="{{ 'COUNTRY' | translate }}">
+                                    <md-option value="tr">tr</md-option>
+                                    <md-option value="en">uk</md-option>
+                                    <md-option value="al">al</md-option>
+                                </md-select>
+                        </div>
+                        <div layout="row" flex layout-align="end center">
+                            <md-tooltip direction="top">
+                            {{ 'STARTDATE_TIP' | translate }}
+                            </md-tooltip>
+                            <label>{{ 'STARTDATE' | translate }}
+                            </label>
+                                <md-datepicker name="building.startDate" ng-model="building.startDate"
+                                            placeholder="{{ 'STARTDATE' | translate }}" required=""
+                                            md-max-date="">
+                                </md-datepicker>
+                            <br/>
+                            <span flex></span>
+                            <md-button class="md-button md-accent" ng-click="save()">
+                                <md-icon aria-label="{{ 'SAVE' | translate }}" md-font-set="material-icons">save</md-icon>
+                            </md-button>
+                            <md-button class="md-button md-accent" ng-click="deleteBuilding(building)">
+                                <md-icon aria-label="{{ 'DELETE' | translate }}" md-font-set="material-icons">delete</md-icon>
+                            </md-button>
+                        </div>
+                    </form>
+                </div>
+            <div flex class="building-maps">
+                <script type="text/ng-template" id="control.tpl.html">
+                   
+                </script>
+                    <ui-gmap-google-map class="angular-google-map-container" center="map.center" events="map.events" zoom="16">
+                        <ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id">
+                            <ui-gmap-window>
+                                <p>
+                                    {{ building.name + ' ' + building.street }}
+                                    <br/>
+                                    <small>{{ building.location.longitude + ' ' +  building.location.latitude }}</small>
+                                </p>
+                            </ui-gmap-window>
+                        </ui-gmap-marker>
+                        <ui-gmap-map-control template="control.tpl.html" controller="MapController" position="top-right" index="-1">
+                        </ui-gmap-map-control>
+                    </ui-gmap-google-map>
+            </div>
+        </md-content>
+    </div>
+</div>
+    

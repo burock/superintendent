@@ -1,0 +1,27 @@
+<md-content layout-padding flex >
+      <md-grid-list
+        md-cols-sm="1" md-cols-md="2" md-cols-gt-md="6"
+        md-row-height-gt-md="1:1" md-row-height="2:2"
+        md-gutter="24px" md-gutter-gt-sm="12px">
+        <md-grid-tile  md-ink-ripple="false" ng-click="goto(building._id)" md-rowspan="1"
+          md-colspan="2" class="gray-green" ng-repeat="building in buildings">
+                <div flex class="md-padding"  layout-align="start start">
+                  <h3>{{ building.name }}</h3>
+                  <p>{{'Address:' + building.no + ' ' + building.street + ' ' + building.county}}</p>
+                </div>
+               <md-grid-tile-footer layout-align="end center">
+              </md-grid-tile-footer>
+        </md-grid-tile>
+      </md-grid-list>
+      <md-fab-speed-dial class="md-fab-top-right">
+      <md-fab-trigger>
+        <md-button  class="md-fab md-fab-right md-accent" aria-label="{{ 'ADD' | translate }} {{ 'FLAT' | translate }}" ng-click="addBuilding();">
+            <md-tooltip md-direction="left">
+                {{ 'CLICK_TO_ADD' | translate }} {{ 'BUILDING' | translate | lowercase}}
+            </md-tooltip>
+            <md-icon md-font-set="material-icons"> add </md-icon>
+        </md-button>
+      </md-fab-trigger>
+    </md-fab-speed-dial>
+</md-content>
+

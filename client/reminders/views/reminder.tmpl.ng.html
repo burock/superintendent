@@ -1,0 +1,46 @@
+<md-dialog ng-cloak>
+  <form name="reminderForm">
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>{{ 'REMINDER' | translate }}</h2>
+        <span flex></span>
+         <md-dialog-actions layout="row">
+          <span flex></span>
+          <md-button class="md-icon-button my-button" ng-click="cancel()">
+                <md-icon md-font-set="material-icons">close</md-icon>
+          </md-button>
+        </md-dialog-actions>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <div class="md-dialog-content">
+          <input ng-model="reminder.id" ng-value="reminder._id" type="hidden" />
+          <md-input-container>
+              <label>{{ 'TITLE' | translate }}</label>
+              <input ng-model="reminder.title" required />
+          </md-input-container>
+          <md-datepicker  ng-model="reminder.start" md-placeholder="{{ 'STARTDATE' | translate }}"></md-datepicker>
+          <md-datepicker ng-model="reminder.end" md-placeholder="{{ 'ENDDATE' | translate }}"></md-datepicker>
+          <md-input-container>
+              <label>{{ 'RECURRING' | translate }}</label>
+              <md-select  aria-label="date" ng-model="reminder.recurring">
+                  <md-option value="0">None</md-option>
+                  <md-option value="d">{{ 'DAY' | translate }}</md-option>
+                  <md-option value="w">{{ 'WEEK' | translate }}</md-option>
+                  <md-option value="M">{{ 'MONTH' | translate }}</md-option>
+                  <md-option value="y">{{ 'YEAR' | translate }}</md-option>
+              </md-select>
+          </md-input-container>
+          <div layout="row" flex layout-align="end center">
+              <md-button  class="md-icon-button my-button" aria-label="{{ 'SAVE' | translate }} {{ 'REMINDER' | translate }}" 
+                    ng-click="saveReminder(reminder);reminder='';">
+                    <md-icon md-font-set="material-icons">save</md-icon>
+              </md-button>
+              <md-button class="md-icon-button my-button" ng-show="reminder._id" ng-click="deleteReminder(reminder)">
+                    <md-icon md-font-set="material-icons">delete</md-icon>
+              </md-button>
+          </div>
+      </div>
+    </md-dialog-content>
+  </form>
+</md-dialog>

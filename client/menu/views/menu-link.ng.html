@@ -1,0 +1,6 @@
+<md-button class="{{section.customclass}}" layout-align = "start center" ui-sref-active="active" 
+    ui-sref="{{section.state}}({ buildingId : '{{ section.buildingId }}' })" >
+    <md-icon md-font-set="material-icons">{{section.icon}}</md-icon>
+    {{section.name | translate }} 
+    <span class="md-visually-hidden" ng-if="isSelected()">current page</span>
+</md-button>
