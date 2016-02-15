@@ -1,7 +1,11 @@
 angular.module("super")
-    .controller("EventCalendarController", ['$meteor', '$scope',
-        'uiCalendarConfig', '$mdDialog', '$stateParams', '$mdMedia', '$state', '$rootScope', '$translate', '$compile',
-        function($meteor, $scope, uiCalendarConfig, $mdDialog, $stateParams, $mdMedia, $state, $rootScope, $translate, $compile) {
+    .controller("EventCalendarController", ['$scope',
+        'uiCalendarConfig', '$mdDialog', '$stateParams', '$mdMedia', '$state', 
+        '$rootScope', '$translate', '$compile','$reactive',
+        function($scope, uiCalendarConfig, $mdDialog, $stateParams, 
+                $mdMedia, $state, $rootScope, $translate, $compile,$reactive) {
+            if ($rootScope.building == null || $stateParams.buildingId == '') $state.go('buildings');
+            $reactive(this).attach($scope);
             var eventCtrl = this;
             var tracker = new Tracker.Dependency();
             
@@ -19,14 +23,16 @@ angular.module("super")
                 $scope.isLoading = isLoading;
             }
             
-            function notifyUser(err) {
-            if (err)
-              $rootScope.showSimpleToast(err.reason);
-            else
-              $rootScope.showSimpleToast('reminders subscription was stopped.');
-            };
+            $scope.helpers({
+                reminders : () => {
+                    return Reminders.find({ buildingId: $stateParams.buildingId,  recurring: '0'} , {});
+                },
+                recurrents : () => {
+                    return Reminders.find({  buildingId: $stateParams.buildingId, recurring: { $ne: '0'}}, {});
+                }
+            })
             
-            $meteor.autorun( $scope, function() {
+            $scope.autorun(function() {
                 tracker.depend();
 
                 var start = $scope.view && $scope.view.start;
@@ -35,70 +41,56 @@ angular.module("super")
                     return;
                 }
                 
-                $scope.$meteorSubscribe('reminders',
-                      {
-                        onStop: notifyUser 
-                      }, { start: start,
-                           end: end,
-                           buildingId: $stateParams.buildingId
-                          
-                      })
-                      .then(function(subscriptionHandle){
-                        $scope.reminders =$meteor.collection(function() {
-                          return Reminders.find({ recurring: '0'});
-                        });
-                }); 
-                
-                $scope.$meteorSubscribe('recurrents',
-                      {
-                        onStop: notifyUser 
-                      }, { start: start,
-                           end: end,
-                           buildingId: $stateParams.buildingId
-                          
-                      })
-                      .then(function(subscriptionHandle){
-                        $scope.recurrents =$meteor.collection(function() {
-                          return Reminders.find({ recurring: { $ne: '0'}});
-                        });
-                }); 
+                $scope.subscribe('reminders', () => {
+                   return [
+                          { 
+                              start: start,
+                              end: end,
+                              buildingId: $stateParams.buildingId
+                          }
+                       ] 
+                });
+                $scope.subscribe('recurrents', () => {
+                   return [
+                          { 
+                              start: start,
+                              end: end,
+                              buildingId: $stateParams.buildingId
+                          }
+                       ] 
+                });
           
-                $meteor.call("getRecurrents", start, end, $stateParams.buildingId).then(
-                    function(data) {
+                Meteor.call("getRecurrents", start, end, $stateParams.buildingId, function(err,data) {
+                    if (err) {
+                        console.log('failed', err);
+                    } else {
                         $scope.recurrentEvents = data;
-                    },
-                    function(err) {
-                        console.log('failed', err);
                     }
-                );
+                });
                 
-                $meteor.call("getReminders", start, end, $stateParams.buildingId).then(
-                    function(data) {
-                        $scope.reminderEvents = data;
-                    },
-                    function(err) {
+                Meteor.call("getReminders", start, end, $stateParams.buildingId, function(err,data) {
+                    if (err) {
                         console.log('failed', err);
+                    } else {
+                         $scope.reminderEvents = data;
                     }
-                );
+                });
                 
-                $meteor.call("c4cal", start, end, $stateParams.buildingId).then(
-                    function(data) {
+                Meteor.call("c4cal", start, end, $stateParams.buildingId, function(err,data) {
+                    if (err) {
+                        console.log('failed', err);
+                    } else {
                         $scope.cashflows = data;
-                    },
-                    function(err) {
-                        console.log('failed', err);
                     }
-                );
+                });
 
-                $meteor.call("p4cal", start, end, $stateParams.buildingId).then(
-                    function(data) {
-                        $scope.projects = data;
-                    },
-                    function(err) {
+                Meteor.call("p4cal", start, end, $stateParams.buildingId, function(err,data) {
+                    if (err) {
                         console.log('failed', err);
+                    } else {
+                        $scope.projects = data;
                     }
-                );
-                
+                });
                 
             });
 			$scope.customFullscreen = $mdMedia('sm');
@@ -112,36 +104,48 @@ angular.module("super")
 				$mdDialog.hide();
 			};
 
+            $scope.updateReminder = function(r) {
+                Reminders.update({ _id : r._id }, {
+                    $set : {
+                        title : r.title,
+    					start : r.start,
+    					end	: r.end,
+    					recurring : r.recurring
+                    }
+                }, function(err, data) {
+                    if (err) {
+                        console.log('Error updating reminder', err);
+                    } else {
+                        $rootScope.showSimpleToast(this, $translate.instant('SAVED') + ' ' + r.title);
+    	                $scope.refresh();
+                    } 
+                });  
+                
+            };
+            
 	        $scope.saveReminder = function (reminder) {
 	            if (reminder._id) {
 	                reminder.id = reminder._id;
-    			    reminder.save();
-    				$mdDialog.hide();
-    	        } else {
-    	           if (reminder.recurring=='0')
-        	            $scope.reminders.save(reminder);
-        	       else 
-        	            $scope.recurrents.save(reminder);
-    	           $mdDialog.hide();
     	        }
-    	        $rootScope.showSimpleToast(this, $translate.instant('SAVED') + ' ' + reminder.title);
-    	        $scope.refresh();
+    	        $scope.updateReminder(reminder);     
+    	        $mdDialog.hide();
 			};		
 			
 			$scope.deleteReminder = function (reminder) {
-			    if (reminder.recurring=='0')
-                $scope.reminders.remove(reminder);
-                else
-                $scope.recurrents.remove(reminder);
-                
-                $rootScope.showSimpleToast(this, $translate.instant('DELETED') + ' ' + reminder.title);
+                Reminders.remove({_id : reminder._id });
+                $rootScope.showSimpleToast(this, $translate.instant('U_DELETED') + ' ' + reminder.title);
                 $scope.refresh();
 				$mdDialog.hide();
 			};	
 			
 			$scope.showDialog = function(event) {
 				if (event) {
-				    $scope.reminder = $meteor.object(Reminders, event._id, false);
+				    $scope.helpers({
+				       reminder : () => {
+				           var r = Reminders.findOne( { _id: event._id }); 
+				           return r
+				       } 
+				    });
 				} 
 			    $mdDialog.show({
 			      templateUrl: 'client/reminders/views/reminder.tmpl.ng.html',
@@ -170,11 +174,19 @@ angular.module("super")
 					'done' : false,
 					'recurring' : '0'
 				};
+				Reminders.insert($scope.reminder, function(err, data) {
+				    if (err) 
+				        console.log('error', err);
+				    else {
+				        $scope.reminder.id = data;
+				        $scope.reminder._id = data;
+				    }
+				});
 				$scope.showDialog();    
 			};
 			
             eventCtrl.calendarConfig = {
-                height: 450,
+                height: 'auto',
                 editable: true,
                 customButtons: {
                     refreshButton: {
@@ -216,7 +228,7 @@ angular.module("super")
                 	    $scope.showDialog(calEvent);
                 },
                 eventDragStart:  function(calEvent, jsEvent, ui, view) {
-                    $scope.reminder = $meteor.object(Reminders, calEvent._id, false);
+                    $scope.reminder = Reminders.findOne( { _id : calEvent._id });
 		        },
                 eventDrop: function(calEvent,dayDelta,minuteDelta,allDay,revertFunc) {
                     $scope.reminder.start = calEvent.start.toDate();
@@ -225,7 +237,7 @@ angular.module("super")
                     } catch (e) {
                         console.log('no end date');
                     };
-                    $scope.reminder.save();
+                    $scope.updateReminder($scope.reminder);
     		    },
     		    eventResize: function(calEvent,dayDelta,minuteDelta,allDay,revertFunc) {
     		    },

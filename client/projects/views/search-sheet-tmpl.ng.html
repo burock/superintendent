@@ -1,0 +1,35 @@
+<md-bottom-sheet class="md-grid" layout="column" ng-cloak>
+    <input type="hidden" ng-model="filterProjectId" />
+    <md-list flex layout="row" layout-align="start center">
+        <md-list-item flex="100">
+          <div layout="row">
+              <md-input-container>
+                <label>{{ 'STATUS' | translate }}</label>
+                <md-select ng-model="filterFinished" ng-change="">
+                  <md-option value="">{{ 'ALL' | translate }}</md-option>
+                  <md-option value="true">{{ 'FINISHED' | translate }}</md-option>
+                  <md-option value="false">{{ 'UNFINISHED' | translate }}</md-option>
+                </md-select>
+              </md-input-container> 
+              <md-input-container class="md-icon-float md-block">
+                <label>{{ 'SEARCH_WORD' | translate }} </label>
+                <md-icon md-font-set="material-icons"> search </md-icon>
+                <input ng-model="filterProjects" />
+              </md-input-container>
+              <md-input-container>
+                <md-button class="md-icon-button my-button " ng-click="clearSearch()">
+                    <md-tooltip direction="top">
+                                {{ 'CLEAR_SEARCH' | translate }}
+                    </md-tooltip>
+                    <md-icon md-font-set="material-icons">healing</md-icon>
+                </md-button><br>
+              </md-input-container>
+              <md-input-container>
+                <md-button class="md-icon-button my-button " ng-click="hideMe();">
+                    <md-icon md-font-set="material-icons">keyboard_arrow_down</md-icon>
+                </md-button><br>
+              </md-input-container>
+            </div>
+        </md-list-item>
+    </md-list>
+</md-bottom-sheet>

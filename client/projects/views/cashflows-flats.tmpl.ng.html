@@ -1,0 +1,49 @@
+<md-dialog>
+    <md-toolbar>
+      <div class="md-toolbar-tools md-title">
+        {{ 'PAYMENTS' | translate }}
+        <span flex></span>
+         <md-dialog-actions layout="row">
+          <span flex></span>
+          <md-button class="md-icon-button my-button" ng-click="cancel()">
+                <md-icon ng-style="{ 'font-size':'18px',height:'18px'}"  md-font-set="material-icons">close</md-icon>
+          </md-button>
+        </md-dialog-actions>
+      </div>
+    </md-toolbar>
+    <md-dialog-content layout="column" flex layout-padding layout-margin layout-align="center center">
+        <md-content flex  style="width:100%; height:100%">
+            <table class="md-table md-table--bordered" ng-cloak>
+              <thead ng-repeat="flat in flats|limitTo:1">
+                <th class="yellow">{{ 'FLAT' | translate }}</th>
+                <th ng-class-odd="'gray'" ng-repeat="pay in flat.payments | orderBy: 'pay.paymentDate'">
+                  {{ pay.paymentDate | date:'dd/MM' }}
+                </th>
+              </thead>
+              <tbody ng-init="total = {}">
+              <tr ng-repeat="flat in flats | orderBy: 'flat.no' ">
+                 <td class="yellow" align="center">{{ flat.no | number }}</td>
+                 <td ng-class-odd="'gray-green'" align="right" 
+                    ng-init="total[$index].payment = total[$index].payment + '+' + pay.paymentAmount" 
+                    ng-repeat="pay in flat.payments | orderBy : 'pay.paymentDate' ">
+                     {{ pay.paymentAmount }}
+                 </td>
+              </tr>
+              <tr class="green">
+                  <td><md-icon md-font-set="material-icons">functions</md-icon></td>
+                  <td  align="center" ng-repeat="p in total">{{ $eval(p.payment).toFixed(2) }}</td>
+              </tr>
+              </tbody>
+            </table>
+        </md-content>
+        <div layout="row" flex layout-align="end center">
+              <span flex></span>
+              <md-button class="md-button" ng-click="cancel()">
+                  {{ 'CLOSE' | translate }}
+              </md-button>
+              <md-button class="md-button" ng-click="confirmCashflows()">
+                  {{ 'CREATE_CASHFLOWS' | translate }}
+              </md-button>
+          </div>
+    </md-dialog-content>
+</md-dialog>

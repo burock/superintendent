@@ -1,5 +1,5 @@
 <md-dialog ng-cloak>
-  <form name="reminderForm">
+  <form name="reminderForm" ng-submit="saveReminder(reminder);">
     <md-toolbar>
       <div class="md-toolbar-tools">
         <h2>{{ 'REMINDER' | translate }}</h2>
@@ -13,7 +13,7 @@
       </div>
     </md-toolbar>
     <md-dialog-content>
-      <div class="md-dialog-content">
+      <div layout="column" class="md-dialog-content">
           <input ng-model="reminder.id" ng-value="reminder._id" type="hidden" />
           <md-input-container>
               <label>{{ 'TITLE' | translate }}</label>
@@ -33,7 +33,7 @@
           </md-input-container>
           <div layout="row" flex layout-align="end center">
               <md-button  class="md-icon-button my-button" aria-label="{{ 'SAVE' | translate }} {{ 'REMINDER' | translate }}" 
-                    ng-click="saveReminder(reminder);reminder='';">
+                    ng-click="saveReminder(reminder);">
                     <md-icon md-font-set="material-icons">save</md-icon>
               </md-button>
               <md-button class="md-icon-button my-button" ng-show="reminder._id" ng-click="deleteReminder(reminder)">

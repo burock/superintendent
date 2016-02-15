@@ -1,7 +1,8 @@
-<md-content ng-cloak layout="row" layout-sm="column">
-    <md-fab-speed-dial class="md-fab-top-right">
+<md-content layout="column" flex ng-cloak>
+    <md-fab-speed-dial class="md-fab-top-right"  ng-hide="flipped">
       <md-fab-trigger>
-        <md-button  class="md-fab md-fab-right md-accent" aria-label="{{ 'ADD' | translate }} {{ 'FLAT' | translate }}" 
+        <md-button  class="md-fab md-fab-right md-accent" ng-class="{ 'md-mini' : $mdMedia('xs') }"
+            aria-label="{{ 'ADD' | translate }} {{ 'FLAT' | translate }}" 
             ng-click="addFlat();">
             <md-tooltip md-direction="left">
                 {{ 'CLICK_TO_ADD' | translate }} {{ 'FLAT' | translate }}
@@ -10,20 +11,194 @@
         </md-button>
       </md-fab-trigger>
     </md-fab-speed-dial>
-    <div flex="40" layout-padding layout-margin layout-wrap layout-fill style="padding-bottom: 32px;">
-        <loading count="flatsCount"></loading>
-        <md-grid-list md-cols-sm="1" md-cols-md="2" md-cols-gt-md="6"  ng-show="flatsCount>0"
-        md-row-height-gt-md="1:1" md-row-height="2:2"
-        md-gutter="12px" md-gutter-gt-sm="8px" layout-align="space-around center">
-              <md-grid-tile class="gray"  md-rowspan="2" md-colspan="2"
-                    ng-class="{ active: flat._id == currentFlatId }" ng-click="displayFlat(flat._id)"
-                    ng-repeat="flat in flats">
-                  <span class="md-caption" layout-align="start start">{{ flat.flatOwner }}</span>
-                  <md-grid-tile-footer layout-align="center center">
-                      <p class='tile-footer'>{{ 'FLAT'|translate|uppercase}} : {{ flat.no }}</p>
+    <md-fab-speed-dial class="md-fab-top-left" ng-show="flipped">
+      <md-fab-trigger>
+        <md-button  class="md-fab md-fab-left md-accent md-mini"
+            aria-label="{{ 'BACK' | translate }}" 
+            ng-click="flip();">
+            <md-tooltip md-direction="right">
+                {{ 'GO_BACK' | translate }}
+            </md-tooltip>
+            <md-icon md-font-set="material-icons">undo</md-icon>
+        </md-button>
+      </md-fab-trigger>
+    </md-fab-speed-dial>
+    <flipper flipped="flipped" horizontal>
+      <front layout-padding flex>
+          <loading ng-class="{ 'pin': numberOfFlats>0 }" count="numberOfFlats"></loading>
+          <md-grid-list md-cols="3" md-cols-gt-sm="5" ng-show="numberOfFlats>0"
+                md-gutter="6px" md-gutter-gt-sm="12px" md-row-height="1:1"  ng-cloak>
+                <md-grid-tile class="blue" ng-cloak
+                      ng-class="{ 'active dark': f._id == currentFlatId }" ng-click="displayFlat(f._id)"
+                      dir-paginate="f in flats | itemsPerPage: fperPage" 
+                      current-page="fcurrentPage"
+                      pagination-id="flats-pagination"
+                      total-items="numberOfFlats">
+                    <div ng-class="{ 'md-subhead':isBig, 'md-caption':isBig==false }" layout-padding>
+                        {{ f.flatOwner }}<br>
+                        <span  class="font-white" style="font-style:italic;">
+                            <md-icon  class="font-white" ng-style="{ 'font-size':'12px',height:'12px'}" 
+                              md-font-set="material-icons">phone</md-icon>
+                            {{f.phone}}</span>
+                    </div>
+                    <md-grid-tile-footer layout-align="center center">
+                        <span class='tile-footer font-white' 
+                        translate="FLAT" translate-compile="false"></span>
+                        <span class='font-white'>{{ f.no }}</span>  
                     </md-grid-tile-footer>
-              </md-grid-tile>
-          </md-grid-list>
-      </div>
-      <flatdetails flex="50"></flatdetails> 
+                </md-grid-tile>
+            </md-grid-list>
+            <div layout="row" layout-align="start center" id="bottombar">
+              <dir-pagination-controls template-url="client/lib/pagination-tmpl.ng.html" 
+                  pagination-id="flats-pagination" auto-hide="true"
+                  on-page-change="fpageChanged(newPageNumber)"></dir-pagination-controls>
+            </div>
+        </front>
+        <back ng-show="flipped" flex>
+            <!-- flat detail section-->
+            <md-tabs md-dynamic-height  md-border-bottom md-autoselect  class="" >
+              <md-tab id="tab2" ng-disabled="true" ng-show="$mdMedia('gt-sm')">
+                  <md-tab-label>&nbsp;&nbsp;&nbsp;</md-tab-label>
+              </md-tab>
+              <md-tab label="{{ 'DETAILS' | translate }}">
+                      <md-content layout-padding layout-margin flex ng-cloak>
+                              <form name="flatForm" novalidation>
+                                  <div layout layout-sm="column">
+                                      <md-input-container class="md-block">
+                                          <label>{{ 'NR' | translate }}</label>
+                                          <input ng-model="flat.no" name="no" style="width:50px" required />
+                                          <div ng-messages="flatForm.no.$error" ng-hide="flatForm.no.$valid">
+                                              <div ng-message-exp="['required']">
+                                                {{ 'REQUIRED' | translate }}
+                                              </div>
+                                           </div> 
+                                      </md-input-container>
+                                      <md-input-container>
+                                          <label>{{ 'ALLOTMENT' | translate }}</label>
+                                          <input maxsize="5" name="allotment" style="width:100px" ng-model="flat.allotment"  type="number"  required>
+                                          <div ng-messages="flatForm.allotment.$error" ng-hide="flatForm.allotment.$valid">
+                                              <div ng-message-exp="['required']">
+                                                {{ 'REQUIRED' | translate }}
+                                              </div>
+                                           </div> 
+                                      </md-input-container>
+                                      <md-input-container class="md-block">
+                                          <label>{{ 'DUES' | translate }}</label>
+                                          <input type="number" name="dues" ng-model="flat.dues" />
+                                      </md-input-container>
+                                  </div>
+                                  <div layout layout-sm="column">
+                                      <md-input-container class="md-block">
+                                          <label>{{ 'FLAT_OWNER' | translate }}</label>
+                                          <input type="text" name="flatOwner" ng-model="flat.flatOwner" required />
+                                          <div ng-messages="flatForm.flatOwner.$error" ng-hide="flatForm.flatOwner.$valid">
+                                              <div ng-message-exp="['required']">
+                                                {{ 'REQUIRED' | translate }}
+                                              </div>
+                                           </div> 
+                                      </md-input-container>
+                                      <md-input-container class="md-block">
+                                          <label>{{ 'FLAT_OWNER_EMAIL' | translate }}</label>
+                                          <input ng-model="flat.flatOwnerEmail" name="flatOwnerEmail"  
+                                          minlength="5" maxlength="100" ng-pattern="/^.+@.+\..+$/"/>
+                                          <div ng-messages="flatForm.flatOwnerEmail.$error" ng-hide="flatForm.flatOwnerEmail.$valid">
+                                              <div ng-message-exp="['minlength', 'maxlength', 'pattern']">
+                                                {{ 'INVALID_EMAIL' | translate }}
+                                              </div>
+                                           </div>
+                                      </md-input-container>
+                                  </div>
+                                  <div layout layout-sm="column">
+                                      <md-input-container class="md-block">
+                                          <label>{{ 'FLAT_OWNER_PHONE' | translate }}</label>
+                                          <input ng-model="flat.phone" name="phone"  
+                                          ng-pattern="/^\([0-9]{3}\) [0-9]{3}-[0-9]{4}$/" />
+                                          <div class="hint">(###) ###-####</div>
+                                          <div ng-messages="flatForm.phone.$error"  ng-hide="flatForm.phone.$valid">
+                                              <div ng-message="pattern">(###) ###-#### - {{ 'INVALID_PHONE' | translate }}</div>
+                                          </div>                                
+                                      </md-input-container>
+                                      <md-input-container class="md-block">
+                                          <label>{{ 'FLAT_OWNER_ADDRESS' | translate }}</label>
+                                          <input ng-model="flat.ownerAddress" name="ownerAddress" type="text" required />
+                                          <div ng-messages="flatForm.ownerAddress.$error" ng-hide="flatForm.ownerAddress.$valid">
+                                              <div ng-message-exp="['required']">
+                                                {{ 'REQUIRED' | translate }}
+                                              </div>
+                                           </div>                            
+                                      </md-input-container>
+                                  </div>
+                                  <div layout layout-sm="column">
+                                      <md-input-container class="md-block">
+                                          <label>{{ 'TENANT' | translate }}</label>
+                                          <input name="tenant" ng-model="flat.tenant" />
+                                      </md-input-container>
+                                      <md-input-container class="md-block">
+                                          <label>{{ 'TENANT_EMAIL' | translate }}</label>
+                                          <input ng-model="flat.tenantEmail"  name="tenantEmail"  
+                                          minlength="5" maxlength="100" ng-pattern="/^.+@.+\..+$/"
+                                          />
+                                          <div ng-messages="flatForm.tenantEmail.$error" ng-hide="flatForm.tenantEmail.$valid">
+                                              <div ng-message-exp="['minlength', 'maxlength', 'pattern']">
+                                                {{ 'INVALID_EMAIL' | translate }}
+                                              </div>
+                                          </div>
+                                      </md-input-container>
+                                  </div>
+                                   <div layout layout-sm="column">
+                                      <md-input-container class="md-block">
+                                          <label>{{ 'TENANT_PHONE' | translate }}</label>
+                                          <input name="tenantPhone" ng-model="flat.tenantPhone"
+                                          ng-pattern="/^\([0-9]{3}\) [0-9]{3}-[0-9]{4}$/" />
+                                          <div class="hint">(###) ###-####</div>
+                                          <div ng-messages="flatForm.tenantPhone.$error" ng-hide="flatForm.tenantPhone.$valid">
+                                              <div ng-message="pattern">(###) ###-#### - {{ 'INVALID_PHONE' | translate }}</div>
+                                          </div>                                
+                                      </md-input-container>
+                                  </div>
+                                  <div layout="row" flex layout-align="end center">
+                                      <md-button ng-disabled="flatForm.$invalid" class="md-button md-accent" ng-click="saveFlat()">
+                                          <md-icon aria-label="{{ 'SAVE' | translate }}" md-font-set="material-icons">save</md-icon>
+                                      </md-button>
+                                      <md-button class="md-button md-accent" ng-click="deleteFlat(flat)">
+                                          <md-icon aria-label="{{ 'DELETE' | translate }}" md-font-set="material-icons">delete</md-icon>
+                                      </md-button>
+                                  </div>
+                              </form>
+                          </md-content>
+              </md-tab>
+              <md-tab label="{{ 'PAYMENTS'|translate }}">
+                <md-content flex layout-padding layout-margin>
+                      <table class="md-table md-table--bordered" style="width:100%">
+                        <thead>
+                          <th style="width:100px;">
+                            <md-switch ng-model="query.paid" aria-label="paid">
+                              {{ query.paid?('PAID' | translate):('UNPAID' | translate) }}
+                            </md-switch>
+                          </th>
+                          <th>{{ 'DESCRIPTION' | translate }}</th>
+                          <th>{{ 'AMOUNT' | translate }}</th>
+                          <th>{{ 'DATE' | translate }}</th>
+                        </thead>
+                        <tbody>
+                        <tr dir-paginate="cashflow in cashflows | itemsPerPage: perPage" total-items="cashflowsCount"
+                            pagination-id="c-pagination" ng-click="displayCashflow(cashflow._id)">
+                           <td  ng-show="$mdMedia('gt-sm')"><md-icon  md-font-set="material-icons" ng-class="{ 'md-warn' : cashflow.paid }">{{ cashflow.paid?'check':'' }} </md-icon></td>
+                           <td>{{ cashflow.description }}</td>
+                           <td align="right">{{ cashflow.amount }}</td>
+                           <td align="center">{{ cashflow.date | date:'dd MMM yy'  }}</td>
+                        </tr>
+                        </tbody>
+                      </table>
+                      <div layout="row" layout-align="start center" id="bottombar">
+                        <dir-pagination-controls template-url="client/lib/pagination-tmpl.ng.html" 
+                            pagination-id="c-pagination" auto-hide="true"
+                            on-page-change="pageChanged(newPageNumber)" >
+                        </dir-pagination-controls>
+                      </div>            
+                </md-content>
+              </md-tab>
+          </md-tabs>
+        </back>
+      </flipper>
 </md-content>

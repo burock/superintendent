@@ -1,12 +1,20 @@
-<md-content>
-<div class="md-caption">Displaying {{ range.lower }} - {{ range.upper }} of {{ range.total }}</div>
+<md-content layout="row" layout-sm="column" layout-align="end end">
+<md-button href="" title="First page" ng-class="{ disabled : pagination.current == 1 }" 
+ng-click="setCurrent(1)" class="md-icon-button  my-button">
+    <md-icon md-font-set="material-icons">skip_previous</md-icon>
+</md-button>
 <md-button href="" title="Previous page" ng-class="{ disabled : pagination.current == 1 }" 
-ng-click="setCurrent(pagination.current - 1)" class="md-mini">
+ng-click="setCurrent(pagination.current - 1)" class="md-icon-button my-button">
     <md-icon md-font-set="material-icons">arrow_back</md-icon>
 </md-button>
+<div class="md-caption font-red nowrap">[ {{ range.lower }} - {{ range.upper }} / {{ range.total }} ]</div>
 <md-button href="" title="Next page"  
 ng-class="{ disabled : pagination.current == pagination.last }" 
-ng-click="setCurrent(pagination.current + 1)"  class="md-mini">
+ng-click="setCurrent(pagination.current + 1)"  class="md-icon-button my-button">
     <md-icon md-font-set="material-icons">arrow_forward</md-icon>
+</md-button>
+<md-button href="" title="Last page" ng-class="{ disabled :pagination.current == pagination.last}" 
+ng-click="setCurrent(pagination.last)" class="md-icon-button  my-button">
+    <md-icon md-font-set="material-icons">skip_next</md-icon>
 </md-button>
 </md-content>

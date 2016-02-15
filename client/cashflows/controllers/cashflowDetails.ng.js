@@ -1,53 +1,72 @@
 angular.module("super").controller("CashflowDetailsCtrl", ['$scope',
-    '$meteor', '$rootScope', '$state', '$stateParams', '$mdDialog', '$translate',
-    function($scope, $meteor, $rootScope, $state, $stateParams, $mdDialog, $translate) {
-        $scope.$on('cashflowEvent', function(event, cashflowId) {
-            $scope.cashflow = $meteor.object(Cashflows, cashflowId, false);
+     '$rootScope', '$state', '$stateParams', '$mdDialog', '$translate','$reactive',
+    function($scope, $rootScope, $state, $stateParams, $mdDialog, $translate,$reactive) {
+        
+        $reactive(this).attach($scope);
+
+        
+        $scope.dirty = false;
+        
+        $scope.helpers({
+            flats: () => {
+                return Flats.find({buildingId: $stateParams.buildingId});
+            },
+            //sort: {no: 1},
+           // buildingId: $stateParams.buildingId,
+            projects: () => {
+                return Projects.find({ finished: { $ne: true } });
+            }
         });
-
-        if ($stateParams.cashflowId) {
-            $scope.cashflow = $meteor.object(Cashflows, $stateParams.cashflowId, false);
-            $scope.$parent.currentCashflowId = $stateParams.cashflowId;
-        }
-
-        $scope.$meteorSubscribe('flats', {
-                onStop: notifyUser
-            }, $stateParams.buildingId)
-            .then(function(subscriptionHandle) {
-                // Bind all the books to $scope.books
-                $scope.flats = $meteor.collection(Flats);
-                $scope.flatsCount = Flats.find().count();
-            });
-
-        function notifyUser(err) {
-            if (err)
-                $rootScope.showSimpleToast(err.reason);
-            else
-                $rootScope.showSimpleToast('Flats subscription was stopped.');
-        }
-
+        
         $scope.deleteCash = function(cashflow) {
             $rootScope.confirmDelete($translate.instant("CASHFLOW"), cashflow.description).then(
                 function(data) {
-                    if (data) $scope.$parent.cashflows.remove(cashflow);
+                    if (data) {
+                        Cashflows.remove(cashflow._id);
+                        $scope.dirty = false;
+                        $scope.$parent.clearSearch();
+                        $scope.$parent.flip();
+                        $scope.cashflowForm.$setUntouched();
+                    }
                 });
         };
-
-        $scope.saveCash = function() {
-            $scope.cashflow.save();
+        $scope.saveCashflow = function(cashflow) {
+            Cashflows.update({_id: cashflow._id }, {
+                $set: {
+                    description : cashflow.description,
+                    flat : cashflow.flat,
+                    amount: cashflow.amount,
+                    currency : cashflow.currency,
+                    paid: cashflow.paid,
+                    date : cashflow.date,
+                    type : cashflow.type,
+                    projectId: cashflow.projectId
+                } 
+            });
+            $scope.dirty = false;
+            $scope.$parent.clearSearch();
+            $scope.$parent.flip();
             $rootScope.showSimpleToast(this, $translate.instant('SAVED'));
-            /*
-            .then(function(nofDocs) {
-            }, function(error) {
-                console.log("cashflow save error", error);
-            });*/
-
+        };
+        
+        $scope.saveCash = function() {
+            $scope.saveCashflow($scope.cashflow);
         };
 
-        $scope.resetCash = function() {
-            $scope.cashflow.reset();
-        };
-
+         $scope.$watch(function scoper(scope) { return $scope.cashflow; }, function(newValue, oldValue){
+            try {
+            if (oldValue!=newValue)
+                if ($scope.dirty) {
+                    $rootScope.confirmIt($translate.instant("CHANGED", { what: oldValue.description })).then(
+                        function(data) {
+                        if (data) {
+                            $scope.dirty = false;
+                            $scope.saveCashflow(oldValue);
+                        }
+                    });
+                }
+            } catch(e) {}
+         });
     }
 ]).directive('cashflowdetails', function() {
     return {
@@ -56,18 +75,7 @@ angular.module("super").controller("CashflowDetailsCtrl", ['$scope',
         controller: 'CashflowDetailsCtrl',
         transclude: true,
         scope: {
-            id: '@'
+            cashflow: '='
         },
-        link: function($scope, element, attrs) {
-            element.on('click', function() {
-                //element.html('You clicked me!');
-            });
-            element.on('mouseenter', function() {
-                //element.css('background-color', 'yellow');
-            });
-            element.on('mouseleave', function() {
-                //element.css('background-color', 'white');
-            });
-        }
     };
 });

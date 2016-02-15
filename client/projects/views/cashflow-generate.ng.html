@@ -1,0 +1,57 @@
+ <div  ng-cloak layout="column" layout-gt-sm="row" ng-show="project" layout-padding>
+        <md-content>
+          <form name="CashGenForm">
+            <div class="md-caption">{{ 'ADD_CASHFLOW' | translate }}</div>
+            <div class=""  layout="column" layout-gt-sm="row" layout-align="start center">
+                <md-input-container>
+                  <label>{{ 'AMOUNT' | translate }}</label>
+                  <input style="width:150px;" ng-model="cash.amount" type="number" />
+                </md-input-container>
+                <span flex></span>
+                 <md-datepicker ng-model="cash.date" ng-placeholder="{{ 'DATE' | translate }}"></md-datepicker>
+                <md-button ng-click="addCashflow(cash)" class="md-icon-button my-button">
+                  <md-icon aria-label="{{ 'ADD' | translate }}" md-font-set="material-icons">add</md-icon>
+                </md-button>
+            </div>
+            <div class="md-caption" ng-class="{ 'font-red' : project.cost - getTotal()>0 }" ng-show="project.cost - getTotal()>0">
+                    {{ 'TOTAL_COST_VS_REMAIN' | translate:'{ cost: ' + (project.cost?project.cost:0) + ', remaining: ' + (project.cost - getTotal()) + '}' }} 
+            </div>
+          </form>
+          <table class="md-table md-table--bordered">
+          <thead>
+            <th>{{ 'ORDER' | translate }}</th>
+            <th>{{ 'AMOUNT' | translate }}</th>
+            <th>{{ 'DATE' | translate }}</th>
+            <th></th>
+          </thead>
+          <tbody>
+          <tr ng-repeat="cashflow in project.cashflows track by cashflow.id">
+             <td align="center">{{ $index+1 }}</td>
+             <td align="right">{{ cashflow.amount }}</td>
+             <td align="center">{{ cashflow.date | date:'dd/MM/yy'  }}</td>
+             <td>
+                <md-icon class="md-accent" ng-style="{ 'font-size':'24px',height:'24px'}" 
+                ng-click="removeCashflow(cashflow)" aria-label="{{ 'DELETE' | translate }}" 
+                md-font-set="material-icons">delete</md-icon>
+             </td>
+          </tr>
+          </tbody>
+        </table>
+          <div layout="row" flex layout-align="end center">
+              <md-input-container>
+                    <label>{{ 'PAY_SHARE' | translate }}</label>
+                    <md-select ng-model="project.paymenttype" ng-placeholder="{{ 'PAY_SHARE' | translate }}">
+                        <md-option selected value="0">{{ 'ALLOTMENT' | translate }}</md-option>
+                        <md-option value="1">{{ 'EQUAL' | translate }}</md-option>
+                    </md-select>
+              </md-input-container>
+              <span flex></span>
+              <md-button  ng-click="calculate()" ng-hide="mobile">
+                  {{ 'CALCULATE' | translate }}
+              </md-button>
+              <md-button class="md-button" ng-click="saveProject()">
+                  {{ 'SAVE' | translate }}
+              </md-button>
+          </div>
+      </md-content>
+</div>

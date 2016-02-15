@@ -1,0 +1,58 @@
+<md-container layout="column">
+<p layout-align="start center" class="md-title">{{ building.name}} Yönetimi</p>
+<p>Tel: {{ legal.phone }} 
+<input class="no-print" type="phone" ng-model="legal.phone" placeholder="{{ 'PHONE' | translate }}"></p>
+<p>
+Sayın {{ legal.whom }} <input type="text"  class="no-print"  ng-model="legal.whom" placeholder="{{ 'NAME' | translate }}">
+</p> 
+<p>
+<md-datepicker class="no-print" ng-model="legal.formDate" placeholder="{{ 'DATE' | translate }}"></md-datepicker>{{ formattedDate() }} tarihi itibarı ile toplam {{ legal.debt }} <input  class="no-print"  type="number" ng-model="legal.debt" placeholder="{{ 'AMOUNT' | translate }}">TL 
+ödenmemiş aidat borcunuz bulunmaktadır. 
+</p>
+<p>
+Genel Kurul toplantısında Kat Mülkiyeti Kanunu uyarınca ödenmeyen aidat borçlarına aylık 
+%5 gecikme faizi uygulanmasına; aidat borcunu ödemeyen kat malikleri hakkında icra 
+takibine geçilmesi hususunda yöneticiye yetki verilmesine karar verilmiştir. 
+</p>
+<p>
+Sayın {{ legal.whom }} işbu ihtarnamenin 
+tarafınıza tebliğinden itibaren 5 (Beş) gün içinde faiz hariç {{ legal.debt }} TL 
+aidat borcunuzu ödemenizi aksi takdirde aleyhinizde icra takibine geçileceğini 
+ve Kat Mülkiyeti Kanundan doğan sair hakların kullanılacağını bu uğurda yapılacak 
+her türlü masraf ve avukatlık ücretinin de tarafınıza ait olacağını ihtar ederiz. 
+</p>
+<p>
+Sayın Noter; 
+</p>
+<p>
+Üç nüshadan ibaret işbu ihtarnamenin bir nüshasının muhataba tebliğini bir nüshasının dairenizde saklanmasını tebliğ şerhi verilecek diğer nüshasının ise tarafımıza verilmesini talep ederiz.
+</p> 
+<br>
+<p>
+DÜZENLEYEN
+</p>
+<p>
+{{ building.name}} Yönetimi
+</p>
+<p>
+MUHATAP: {{ legal.whom }} 
+</p>
+<p>
+<input class="no-print"  type="text" ng-model="legal.title" placeholder="{{ 'TITLE' | translate }}"><br/>  
+KONU: {{ legal.title }}
+</p> 
+<p>
+ÖDENMEMİŞ AİDAT BORÇLARINIZ: {{ legal.debt }} 
+</p>
+<p>
+AÇIKLAMA: {{ legal.description }} 
+<br/><textarea   class="no-print"  aria-label="{{ 'DESCRIPTION' | translate }}" ng-model="legal.description" columns="1"></textarea>
+</p> 
+<br>
+<p>
+{{ building.name}} Yönetimi 
+</p>
+<p>
+Tel: {{ legal.phone }} 
+</p>
+</md-container>

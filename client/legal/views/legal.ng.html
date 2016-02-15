@@ -1,0 +1,56 @@
+<md-container layout-padding >
+    <div ng-hide="picked">
+        <div class="md-title">{{ 'LEGAL_INTRO' | translate }}</div>
+        <ul>
+            <li>{{ 'DUNNING_LETTER' | translate }}<span flex></span>
+            <md-button class="md-accent" ng-click="getForm('debt.tr.ng.html')">
+                <md-icon class="font-white" md-font-set="material-icons">work</md-icon>
+            </md-button>
+            </li>
+        </ul>
+        <div layout-padding>
+            <md-list layout-padding>
+              <div dir-paginate="l in legals | itemsPerPage: perPage" 
+                total-items="legalsCount" href="" ng-click="displayLegal(l._id)">
+                <md-list-item class="md-2-line" ng-show="legalsCount>0">
+                    <div class="md-list-item-text">
+                      <h3>{{ l.title }} - {{ l.debt }}</h3>
+                      <i>{{ l.whom }} {{ formattedDate(l.formDate) }}</i>
+                    </div>
+                    <span flex></span>
+                    <md-button ng-click="deleteLegal(l)">
+                        <md-icon class="font-white" md-font-set="material-icons">delete</md-icon>
+                    </md-button>
+                </md-list-item>
+                <md-divider></md-divider>
+              </div>
+            </md-list>
+            <div layout="row">
+              <dir-pagination-controls template-url="client/lib/pagination-tmpl.ng.html" 
+                  on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
+            </div>
+        </div>
+    </div>
+    <div class="md-whiteframe-2dp" ng-show="picked" layout-padding>
+        <md-content class="silver" layout="column" layout-gt-xs="row" layout-align="start center" layout-padding>
+            <md-input-container>
+            <label>{{ 'FLATS' | translate }}</label>
+            <md-select ng-change="pickFlat(f)" ng-model="cf" aria-label="flats">
+                <md-option value="{{ f._id }}" ng-repeat="f in flats">{{ f.no }} - {{ f.flatOwner }}</md-option>
+            </md-select>
+            </md-input-container>
+            <div>
+                <input type="text" ng-model="legal.whom">
+                <span class="md-warn" ng-model="no_tenant"></span>
+            </div>
+            <md-button class ="md-primary md-fab md-mini" ng-click="printDiv('doc')">
+                <md-icon class="font-white" md-font-set="material-icons">print</md-icon>
+            </md-button>
+            <span flex></span>
+            <md-button class ="md-fab md-mini" ng-click="clear()">
+                <md-icon class="font-white" md-font-set="material-icons">clear</md-icon>
+            </md-button>
+        </md-content>
+        <ng-include src="form" id="doc"></ng-include>
+    </div>
+</md-container>

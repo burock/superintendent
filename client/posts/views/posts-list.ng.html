@@ -1,5 +1,5 @@
-<md-content name="postsList" layout="row" layout-sm="column">
-  <md-fab-speed-dial class="md-fab-top-right">
+<md-content name="postsList" layout="column" layout-gt-sm="row" flex layout-align="stretch">
+    <md-fab-speed-dial class="md-fab-top-right" ng-hide="flipped">
       <md-fab-trigger>
         <md-button  class="md-fab md-fab-right md-accent" aria-label="{{ 'ADD' | translate }} {{ 'POST' | translate }}" 
             ng-click="addPost();">
@@ -10,24 +10,44 @@
         </md-button>
       </md-fab-trigger>
     </md-fab-speed-dial>
-    <div flex="40" layout-padding layout-margin layout-wrap layout-fill style="padding-bottom: 32px;" ng-cloak>
-        <loading count="postsCount.count"></loading>
+    <md-fab-speed-dial class="md-fab-top-left" ng-show="flipped">
+      <md-fab-trigger>
+        <md-button  class="md-fab md-fab-left md-accent" ng-class="{ 'md-mini' : $mdMedia('xs') }"
+            aria-label="{{ 'BACK' | translate }}" 
+            ng-click="flip();">
+            <md-tooltip md-direction="right">
+                {{ 'GO_BACK' | translate }}
+            </md-tooltip>
+            <md-icon md-font-set="material-icons">undo</md-icon>
+        </md-button>
+      </md-fab-trigger>
+    </md-fab-speed-dial>
+    <flipper flipped="flipped" horizontal>
+      <front layout-margin layout-align="stretch">
+        <loading ng-class="{ 'pin': postsCount>0 }" count="postsCount"></loading>
         <md-list>
-          <md-list-item dir-paginate="post in posts | itemsPerPage: perPage" total-items="postsCount.count"
-              class="md-3-line" ng-show="postsCount.count>0"
-              ng-class="{ 'active-light': post._id == currentPostId }">
-              <md-icon md-font-set="material-icons">comment</md-icon>
-              <div class="md-list-item-text">
-                <h3><a href="" ng-click="displayPost(post._id)">{{ post.title }}</a></h3>
-                <p>{{ post.body }}</p>
-                <span class="md-caption">[{{ post.by.emails[0].address }} {{ post.date | date:'medium' }}]</span>
-              </div>
-          </md-list-item>
+          <md-divider></md-divider>
+          <div dir-paginate="p in posts | itemsPerPage: perPage" 
+            total-items="postsCount" href="" ng-click="displayPost(p._id)"
+                ng-class="{ 'active': p._id == currentPostId }">
+            <md-list-item class="md-3-line" ng-show="postsCount>0">
+                <md-icon md-font-set="material-icons">comment</md-icon>
+                <div class="md-list-item-text">
+                  <h3>{{ p.title }}</h3>
+                  <p>{{ p.body.substr(0,20) + '...' }}</p>
+                  <span class="md-caption">[{{ p.by.emails[0].address }}@{{ p.date | date:'dd/MM HH:mm' }}]</span>
+                </div>
+            </md-list-item>
+            <md-divider></md-divider>
+          </div>
         </md-list>
         <div layout="row">
           <dir-pagination-controls template-url="client/lib/pagination-tmpl.ng.html" 
-              on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
+              on-page-change="pageChanged(newPageNumber)" ng-show="postsCount"></dir-pagination-controls>
         </div>
-    </div>
-    <postdetails flex></postdetails>
+    </front>
+    <back ng-show="flipped">
+      <postdetails flex></postdetails>
+    </back>
+  </flipper>
 </md-content>

@@ -1,0 +1,476 @@
+
+/* CSS declarations go here */
+button, select, html, textarea, input {font-family:"Ubuntu",sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}
+body {
+    /*background-color: #FAFAFA;
+    color: #263238;font-size:14px;*/
+    font-family:"Ubuntu",sans-serif !important;
+    line-height:1.42857143;color:#333;background-color:#fff
+}
+/*.md-content {
+    height : 100%;
+}*/
+.map-container {
+    position: relative;
+    width:100%; 
+    height: 380px;
+}
+.md-icon-button.my-button:not([disabled]):hover {
+    background-color: #D84315;
+    color: white;
+}
+
+md-grid-list {
+    margin: 8px;
+}
+md-grid-tile {
+    transition: all 400ms ease-out 50ms;
+    cursor: pointer;
+}
+md-grid-tile:hover {
+  color: #ECEFF1;
+  background: #37474F;
+}
+
+/* active link color constants */
+
+/*md-button:hover {
+    color: #ECEFF1;
+    background-color: #37474F;
+}*/
+.md-button.active * {
+    color: #FFE082;
+}
+.side-menu .md-button.active {
+    color: #ECEFF1;
+    background-color: #37474F;
+}
+.side-menu,
+.side-menu ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 0;
+}
+.side-menu > li.active {
+    color: #ECEFF1;
+    background-color: #37474F;
+}
+.side-menu .md-button {
+    border-radius: 0;
+    color: inherit;
+    cursor: pointer;
+    font-weight: 400;
+    line-height: 40px;
+    margin: 0;
+    max-height: 40px;
+    overflow: hidden;
+    padding: 0px 16px;
+    text-align: left;
+    text-decoration: none;
+    white-space: normal;
+    width: 100%;
+    text-transform: none;
+}
+.md-button:not([disabled]):hover {
+  background-color: #37474F;
+  color: #ECEFF1;
+}
+.side-menu .menu-toggle-list a.md-button {
+    display: block;
+    padding: 0 16px 0 32px;
+    text-transform: none;
+    text-rendering: optimizeLegibility;
+    font-weight: 500;
+}
+.side-menu .menu-toggle-list .md-button {
+    display: block;
+    text-transform: none;
+    padding: 0 16px 0 32px;
+    text-transform: none;
+}
+
+.md-button-toggle .md-toggle-icon.toggled {
+    transform: rotateZ(180deg);
+    -webkit-transform: rotateZ(180deg);
+}
+.side-menu .md-button-toggle .md-toggle-icon {
+    background-size: 100% auto;
+    display: inline-block;
+    margin: auto 0 auto auto;
+    width: 15px;
+    color: darkgray;
+    transition: transform .3s ease-in-out;
+    -webkit-transition: -webkit-transform .3s ease-in-out;
+}
+.menu-toggle-list.ng-hide {
+    max-height: 0;
+}
+.menu-toggle-list {
+    background: #CFD8DC;
+    max-height: 1300px;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+    -webkit-transition: 0.75s cubic-bezier(0.35, 0, 0.25, 1);
+    -webkit-transition-property: max-height;
+    -moz-transition: 0.75s cubic-bezier(0.35, 0, 0.25, 1);
+    -moz-transition-property: max-height;
+    transition: 0.75s cubic-bezier(0.35, 0, 0.25, 1);
+    transition-property: max-height;
+}
+.side-menu menu-toggle span {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.tile-footer {
+    font-style : bold;
+    color : black;
+}
+/* Tables
+   ========================================================================== */
+/**
+ * Remove most spacing between table cells.
+ */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+td,
+th {
+  padding: 0;
+}
+
+th {
+  text-align: left;
+}
+
+.md-table {
+  width: 90%;
+  max-width: 100%;
+  margin-bottom: 20px;
+}
+
+.md-table > thead > tr > th,
+.md-table > thead > tr > td,
+.md-table > tbody > tr > th,
+.md-table > tbody > tr > td,
+.md-table > tfoot > tr > th,
+.md-table > tfoot > tr > td {
+  padding: 5px;
+  /*line-height: 1.2;*/
+  cursor: pointer;
+}
+
+.md-table > tr:hover {
+    background-color : #37474F;
+    color : #ECEFF1;
+}
+.md-table > thead > tr > th {
+  border-bottom: 2px solid rgba(0, 0, 0, 0.12);
+  font-weight: 600;
+  text-align: center;
+}
+
+.md-table > tbody + tbody {
+  border-top: 2px solid rgba(0, 0, 0, 0.12);
+}
+
+.md-table.md-table--bordered > tbody > tr > td {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.md-table.md-table--light-bordered > tbody > tr > td {
+    border-bottom: 1px dashed gray;
+}
+
+
+md-sidenav, 
+md-sidenav.md-locked-open, 
+md-sidenav.md-closed.md-locked-open-add-active {
+    min-width: 200px !important;
+    width: 85vw !important;
+    max-width: 250px !important;
+    height: auto;
+}
+
+
+/* calendar theme */
+/* Remove that awful yellow color and border from today in Schedule */
+
+/*td.fc-today {
+  opacity: 0;
+  border: none;
+  color: gray;
+  background: #33691E;
+}
+*/
+td.fc-today {
+     background: #FFF9C4;
+     font-weight: bold;
+}
+/* Styling for each event from Schedule */
+.fc-time-grid-event.fc-v-event.fc-event {
+  border-radius: 4px;
+  padding: 5px;
+  opacity: .65;
+  left: 5% !important;
+  right: 5% !important;
+}
+
+/* Bolds the name of the event and inherits the font size */
+.fc-event {
+  font-size: inherit !important;
+  font-weight: bold !important;
+}
+
+/* Remove the header border from Schedule */
+.fc td, .fc th {
+  border-style: none !important;
+  border-width: 1px !important;
+  padding: 0 !important;
+  vertical-align: top !important;
+}
+.fc-bg td {
+  border-color: #CFD8DC;    
+  border-style: solid !important;
+  border-width: 1px !important;
+}
+.fc-day:hover {
+    background: #78909C;
+}
+/* Inherits background for each event from Schedule. */
+.fc-event .fc-bg {
+  z-index: 1 !important;
+  background: inherit !important;
+  opacity: .25 !important;
+}
+
+/* Normal font weight for the time in each event */
+.fc-time-grid-event .fc-time {
+  font-weight: normal !important;
+}
+
+/* Apply same opacity to all day events */
+.fc-ltr .fc-h-event.fc-not-end, .fc-rtl .fc-h-event.fc-not-start {
+  opacity: .65 !important;
+  margin-left: 12px !important;
+  padding: 5px! important;
+}
+
+/* Apply same opacity to all day events */
+.fc-day-grid-event.fc-h-event.fc-event.fc-not-start.fc-end {
+  opacity: .65 !important;
+  margin-left: 12px !important;
+  padding: 5px! important;
+}
+.fc-content {
+    font-size: .8em;
+    font-style: none;
+    padding: 3px;
+    font-weight:normal;
+}
+.fc-time{
+   display : none;
+}
+div.fc-row {
+    border-color: transparent;
+}
+.datepickfix * {
+    color: white;
+}
+.silver {
+  background: #ecf0f1;
+}
+.brown {
+    background : #BCAAA4;
+}
+.darkbrown {
+    background: #795548;
+    color: #efefef;
+}
+.gray {
+    background: #ECEFF1;
+}
+.gray-green {
+    background: #B0BEC5;
+}
+.green {
+    background: #689F38;
+}
+.yellow {
+    background: #FFE082;
+}
+.purple {
+    background: #b388ff;
+}
+.red {
+    border: none;
+    background: #D84315;
+}
+.blue {
+    border: none;
+    background: #0097A7;
+}
+.dark {
+     border: none;
+    background: #37474F;
+}
+.darkest {
+    color : #efefef;
+    background  : rgb(66,66,66);
+}
+.beige {
+    border: none;
+    background: #FBE2AA;
+}
+.font-red {
+    color: #D84315 ;
+}
+.font-green {
+    color: #1B5E20;
+}
+.font-white {
+    color: #efefef;
+}
+.font-white a {
+    color: #efefef;
+    text-decoration: none;
+    font-weight:bolder;
+}
+.font-dark {
+    color: #37474F ;
+}
+.font-yellow {
+    color: #FDD835 ;
+}
+.font-flat-title {
+    color: #E57373;
+}
+.font-darkbrown {
+    color: #795548;
+}
+.projects {
+    border: none;
+    background: #6D4C41;
+}
+.recurrent {
+    border: none;
+    background: #212121;
+}
+.floating {
+    position: fixed;
+    top: 50;
+    left: 50;
+    z-index : 100;
+}
+.select-icon {
+    padding-right: 5px;
+}
+/*
+.user-profile {} .register-box {
+    background: #ef9a9a;
+}*/
+
+.register {
+    background-image: url('/img/Superintendent_t.png');
+}
+.active {
+    color: #ECEFF1;
+    background-color: #37474F;
+}
+.active-light {
+    color: #37474F;
+    background-color: #B0BEC5;
+}
+md-list>div:not(.active):hover  {
+    background: #aaa;
+    color: #efefef;
+    cursor: pointer;
+}
+md-list>div.active:hover *  {
+    background: #aaa;
+    color: #efefef;
+    cursor: pointer;
+}
+/* loading fix for ng-hide */
+.pin {
+    height: 0px;
+    width: 0px;
+    display: none;
+}
+md-backdrop{
+position: fixed !important;
+}
+.my-height {
+   height: 500px;
+}
+
+.md-tile-fix {
+    position:absolute; top:52px;left:0px;
+}
+.ct-series-a .ct-bar {
+  stroke: #FB8C00;
+  stroke-width: 20px;
+}
+.ct-series-b .ct-bar {
+  stroke: #3949AB;
+  stroke-width: 20px;
+}
+.ct-series-a .ct-slice-pie {
+  fill: #FB8C00;
+}
+.ct-series-b .ct-slice-pie {
+  fill: #3949AB;
+}
+.ct-bar-chart {
+    height: auto;
+}
+.small-select * {
+    font-size: 0.9em;
+    font-weight: normal;
+}
+.my-flats {
+    /*width: 500px;*/
+}
+.dotted--hr {
+    border:none;
+  border-bottom:4px dotted silver;
+  height:3px;
+  width:80%;
+}
+.safari-fix {
+    display: block;
+}
+@media print
+{    
+    .no-print, .no-print *
+    {
+        display: none !important;
+    }
+    input { display: none !important; }
+    div { display: none !important; }
+    md-datepicker { display: none !important; }
+}
+.myflats-post-body {
+    color: #FDD835;
+    font-size: smaller;
+    width: 30em;
+}
+.dashboard-posts {
+    line-height: 1.4em;
+}
+.hint {
+    /* Position the hint */
+    position: absolute;
+    left: 2px;
+    right: auto;
+    bottom: 7px;
+    /* Copy styles from ng-messages */
+    font-size: 12px;
+    line-height: 14px;
+    transition: all 0.3s cubic-bezier(0.55, 0, 0.55, 0.2);
+    /* Set our own color */
+    color: grey; 
+}

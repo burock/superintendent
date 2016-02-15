@@ -1,52 +1,50 @@
 angular.module("super").controller("ProjectDetailsCtrl", ['$scope',
-    '$meteor', '$rootScope', '$state', '$stateParams', '$mdDialog', '$translate',
-    function($scope, $meteor, $rootScope, $state, $stateParams, $mdDialog, $translate) {
+     '$rootScope', '$state', '$stateParams', '$mdDialog', '$translate', '$reactive',
+    function($scope, $rootScope, $state, $stateParams, $mdDialog, $translate, $reactive) {
+        $reactive(this).attach($scope);
 
-        $scope.$on('projectEvent', function(event, projectId) {
-            $scope.project = $meteor.object(Projects, projectId, false);
-        });
-
-        if ($stateParams.projectId) {
-          $scope.project =  $meteor.object(Projects, $stateParams.projectId, false);
-          $scope.$parent.currentProjectId =  $stateParams.projectId;
-        }
         
         $scope.deleteProject = function(project) {
             $rootScope.confirmDelete($translate.instant("PROJECT"), project.title).then(
                 function(data) {
-                    if (data) $scope.$parent.projects.remove(project);
+                    if (data) Projects.remove(project._id);
+                    $scope.$parent.clearSearch();
+                    $scope.$parent.flip();
+                    $scope.projectForm.$setUntouched();
                 });
-                
         };
 
         $scope.saveProject = function() {
-            $scope.project.save();
-            $rootScope.showSimpleToast(this, "Saved");
+            Projects.update( { _id : $scope.project._id }, {
+                $set : {
+                    title: $scope.project.title,
+                    cost : $scope.project.cost,
+                    startDate : $scope.project.startDate,
+                    endDate : $scope.project.endDate,
+                    detail : $scope.project.detail,
+                    finished : $scope.project.finished,
+                    cashflows : $scope.project.cashflows,
+                    paymenttype : $scope.project.paymenttype
+                }
+            });
+            $scope.$parent.clearSearch();
+            $scope.$parent.flip();
+            $rootScope.showSimpleToast(this,$translate.instant("SAVED"));
         };
-
-        $scope.resetProject = function() {
-            $scope.project.reset();
-        };
-
+        
+        $scope.cancel = function() {
+            $mdDialog.hide();
+        }
+        
     }
 ]).directive('projectdetails', function() {
     return {
         restrict: 'E',
         templateUrl: 'client/projects/views/project-details.ng.html',
         controller: 'ProjectDetailsCtrl',
+        transclude: true,
         scope: {
-            id : '@'
+            project : '='
         },
-        link: function($scope, element, attrs) {
-            element.on('click', function() {
-                //element.html('You clicked me!');
-            });
-            element.on('mouseenter', function() {
-                //element.css('background-color', 'yellow');
-            });
-            element.on('mouseleave', function() {
-                //element.css('background-color', 'white');
-            });
-        }
     };
 });

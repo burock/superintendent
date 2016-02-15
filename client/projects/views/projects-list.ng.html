@@ -1,5 +1,5 @@
-<md-content name="postsList" layout="row" layout-sm="column">
-  <md-fab-speed-dial class="md-fab-top-right">
+<md-content layout="column" layout-gt-sm="row" flex layout-align="stretch">
+    <md-fab-speed-dial class="md-fab-top-right" ng-hide="flipped">
       <md-fab-trigger>
         <md-button  class="md-fab md-fab-right md-accent" aria-label="{{ 'ADD' | translate }} {{ 'PROJECT' | translate }}" 
             ng-click="addProject();">
@@ -10,32 +10,67 @@
         </md-button>
       </md-fab-trigger>
     </md-fab-speed-dial>
-    <div flex="40" layout-padding layout-margin layout-wrap layout-fill style="padding-bottom: 32px;" ng-cloak>
-        <div layout="row">
-          <md-input-container class="md-icon-float md-block">
-            <label>{{ 'SEARCH_WORD' | translate }} </label>
-            <md-icon md-font-set="material-icons"> search </md-icon>
-            <input ng-model="filterProjects" />
-          </md-input-container>
-          <input type="hidden" ng-model="filterProjectId" />
-          <md-button class="md-icon-button my-button " ng-click="clearSearch()">
-                <md-tooltip direction="top">
-                            {{ 'CLEAR_SEARCH' | translate }}
-                </md-tooltip>
-              <md-icon md-font-set="material-icons">clear</md-icon>
+    <md-fab-speed-dial class="md-fab-top-left" ng-show="flipped">
+      <md-fab-trigger>
+        <md-button  class="md-fab md-fab-left md-accent md-mini"
+            aria-label="{{ 'BACK' | translate }}" 
+            ng-click="flip();">
+            <md-tooltip md-direction="right">
+                {{ 'GO_BACK' | translate }}
+            </md-tooltip>
+            <md-icon md-font-set="material-icons">undo</md-icon>
+        </md-button>
+      </md-fab-trigger>
+    </md-fab-speed-dial>
+    <flipper flipped="flipped" horizontal>
+      <front layout-padding>
+        <loading ng-class="{ 'pin': projectsCount>0 }" count="projectsCount"></loading>
+        <md-list ng-show="projectsCount>0">
+          <md-divider></md-divider>
+          <div  dir-paginate="p in projects | itemsPerPage: perPage" total-items="projectsCount"
+            ng-click="displayProject(p._id)"
+            ng-class="{ 'active': p._id == currentProjectId }">
+            <md-list-item class="md-3-line" >
+                <md-icon md-font-set="material-icons" ng-class="{ 'md-accent': p.finished }">{{ p.finished?'done':'build' }}</md-icon>
+                <div class="md-list-item-text">
+                  <h3>{{ p.title }}</h3>
+                  <p>{{ p.detail }}</p>
+                  <span class="md-caption">{{ p.cost + building.currency }} [{{ p.startDate | date:'dd/MM/yy' }}]</span>
+                </div>
+            </md-list-item>
+            <md-divider></md-divider>
+          </div>
+        </md-list>
+         <div layout="row" layout-align="start center" id="bottombar">
+          <dir-pagination-controls template-url="client/lib/pagination-tmpl.ng.html" 
+              on-page-change="pageChanged(newPageNumber)" ng-show="projectsCount>0"></dir-pagination-controls>
+          <md-button  ng-show="$mdMedia('gt-sm')" class="md-fab md-mini" ng-click="openSearchSheet($event)">
+            <md-tooltip>
+              {{ 'SEARCH_WORD' | translate }}
+            </md-tooltip>
+              <md-icon ng-style="{ 'font-size':'12px',height:'12px'}" md-font-set="material-icons"> search </md-icon>
+          </md-button>
+          <md-button  ng-show="$mdMedia('gt-sm')" class="md-fab md-mini" ng-click="clearSearch()">
+            <md-tooltip>
+              {{ 'CLEAR_SEARCH' | translate }}
+            </md-tooltip>
+              <md-icon ng-style="{ 'font-size':'12px',height:'12px'}" md-font-set="material-icons"> clear </md-icon>
           </md-button>
         </div>
-        <md-list ng-show="projectsCount>0">
-          <md-list-item  class="md-3-line" ng-repeat="project in projects | filter:finished"
-              ng-class="{ 'active-light': project._id == currentProjectId }" >
-              <md-icon md-font-set="material-icons">build</md-icon>
-              <div class="md-list-item-text">
-                <h3><a href="" ng-click="displayProject(project._id)">{{ project.title }}</a></h3>
-                <p>{{ project.detail }}</p>
-                <p class="md-caption">{{ project.cost + building.currency }} [{{ project.startDate | date:'small' }}]</p>
-              </div>
-          </md-list-item>
-        </md-list>
-      </div>
-    <projectdetails flex></projectdetails>
+    </front>
+    <back ng-show="flipped">
+        <md-tabs md-border-bottom md-autoselect md-dynamic-height ng-show="currentProjectId" class="" >
+          <md-tab id="tab2" ng-disabled="true" ng-show="$mdMedia('gt-sm')">
+              <md-tab-label>&nbsp;&nbsp;&nbsp;</md-tab-label>
+          </md-tab>
+            <md-tab label="{{ 'DETAILS' | translate }}">
+              <projectdetails flex project="project"></projectdetails>
+            </md-tab>
+            <md-tab label="{{ 'PAYMENTS' | translate }}">
+               <cashflowgenerate flex project="project"></cashflowgenerate>
+            </md-tab>
+        </md-tabs>
+    </back>
+  </flipper>  
+     
 </md-content>

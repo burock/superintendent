@@ -1,19 +1,24 @@
-<md-content flex layout="row" layout-sm="column" layout-padding layout-margin layout-align="center top">
-  <div class="md-whiteframe-8dp" layout="column" layout-align="center center" flex="40">
-    <div layout="row" layout-align="start center">
-      <h3>{{ 'SIGNUP' | translate }}</h3>
-    </div>
-    <form layout="column">
+<md-content flex layout="row" layout-xs="column" layout-padding layout-align="center start">
+  <md-content class="" layout="column" layout-padding layout-align="center start" >
+    <form>
+      <div layout="row" layout-align="start center" class="md-title">
+        {{ 'SIGNUP' | translate }}
+      </div>
+      <md-divider></md-divider>
       <md-input-container class="md-icon-float md-block">
         <label>{{ 'EMAIL' | translate }}</label>
         <md-icon md-font-set="material-icons" class="md-primary">email</md-icon>
-        <input type="text" ng-model="user.email" />
+        <input type="email" ng-model="user.email" />
       </md-input-container>
-      <md-select ng-model="user.profile.language" placeHolder="{{ 'LANGUAGE' | translate }}">
+      <md-input-container class="md-icon-float md-block">
+        <label>{{ 'LANGUAGE' | translate }}</label>
+        <md-icon md-font-set="material-icons" class="md-primary">language</md-icon>
+        <md-select  ng-change="changeLang()" ng-model="user.profile.language">
           <md-option value="tr" selected><img ng-src="/img/tr.png" class="select-icon"/>{{ 'TURKISH' | translate }}</md-option>
           <md-option value="en"><img ng-src="/img/us.png" class="select-icon"/>{{ 'ENGLISH' | translate }}</md-option>
           <md-option value="al"><img ng-src="/img/al.png" class="select-icon"/>{{ 'ALBANIAN' | translate }}</md-option>
         </md-select>
+      </md-input-container>
       <md-input-container class="md-icon-float md-block">
         <label>{{ 'PASSWORD' | translate }}</label>
         <md-icon md-font-set="material-icons" class="md-primary">lock_open</md-icon>
@@ -25,11 +30,10 @@
         </md-button>
       </section>
     </form>
-  </div>
-  <span>&nbsp;&nbsp;</span>
-  <md-content layout="column" class="md-whiteframe-4dp yellow">
+  </md-content>
+  <md-content  ng-show="$mdMedia('gt-sm');"  layout="column" class="md-whiteframe-4dp beige">
     <div>
-      <img ng-src="/img/Superintendent.png" />
+      <img ng-src="/img/SUPER.png" />
       <h3 align="center">
         {{ 'BANNER_TEXT_2' | translate }}
       </h3>

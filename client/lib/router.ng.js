@@ -4,12 +4,27 @@ angular.module("super").config(['$urlRouterProvider', '$stateProvider', '$locati
         $locationProvider.html5Mode(true);
 
         $stateProvider
+            .state('legal', {
+                url: '/buildings/:buildingId/legal',
+                templateUrl: 'client/legal/views/legal.ng.html',
+                controller: 'LegalCtrl',
+                resolve: {
+                    cUser: ($q) => {
+                        if (Meteor.userId() == null) {
+                          return $q.reject('AUTH_REQUIRED');
+                        }
+                        else {
+                          return $q.resolve();
+                        }
+                    }
+                }
+            })
             .state('buildings', {
                 url: '/buildings',
                 templateUrl: 'client/buildings/views/buildings-list.ng.html',
                 controller: 'BuildingsListCtrl',
                 resolve: {
-                    currentUser: ($q) => {
+                    cUser: ($q) => {
                         if (Meteor.userId() == null) {
                           return $q.reject('AUTH_REQUIRED');
                         }
@@ -24,22 +39,7 @@ angular.module("super").config(['$urlRouterProvider', '$stateProvider', '$locati
                 templateUrl: 'client/dashboard.ng.html',
                 controller: 'DashboardCtrl',
                 resolve: {
-                    currentUser: ($q) => {
-                        if (Meteor.userId() == null) {
-                          return $q.reject('AUTH_REQUIRED');
-                        }
-                        else {
-                          return $q.resolve();
-                        }
-                    }
-                }
-            })
-            .state('myflats', {
-                url: '/myflats',
-                templateUrl: 'client/flats/views/myflats-list.ng.html',
-                controller: 'MyFlatsListCtrl',
-                resolve: {
-                    currentUser: ($q) => {
+                    cUser: ($q) => {
                         if (Meteor.userId() == null) {
                           return $q.reject('AUTH_REQUIRED');
                         }
@@ -55,7 +55,7 @@ angular.module("super").config(['$urlRouterProvider', '$stateProvider', '$locati
                 controller: 'EventCalendarController',
                 controllerAs: "eventCtrl",
                 resolve: {
-                    currentUser: ($q) => {
+                    cUser: ($q) => {
                         if (Meteor.userId() == null) {
                           return $q.reject('AUTH_REQUIRED');
                         }
@@ -70,7 +70,7 @@ angular.module("super").config(['$urlRouterProvider', '$stateProvider', '$locati
                 templateUrl: 'client/buildings/views/building-details.ng.html',
                 controller: 'BuildingDetailsCtrl',
                 resolve: {
-                    currentUser: ($q) => {
+                    cUser: ($q) => {
                         if (Meteor.userId() == null) {
                           return $q.reject('AUTH_REQUIRED');
                         }
@@ -78,7 +78,7 @@ angular.module("super").config(['$urlRouterProvider', '$stateProvider', '$locati
                           return $q.resolve();
                         }
                     },
-                    "singleBuildingSubscription":  ['$q', function ($q) {
+                    singleBuildingSubscription:  ['$q', function ($q) {
                           var deferred = $q.defer();
                      
                           Meteor.subscribe('buildings', {
@@ -88,28 +88,20 @@ angular.module("super").config(['$urlRouterProvider', '$stateProvider', '$locati
 
                         return deferred.promise;
                     }],
-                    "building": ['$meteor', '$rootScope', '$stateParams', '$q',
+                    building: ['$stateParams', '$q',
                         'singleBuildingSubscription','$reactive',
-                        function($meteor, $rootScope, $stateParams, $q,
+                        function( $stateParams, $q,
                                 singleBuildingSubscription,$reactive) {
-                            /*var b = $meteor.object(Buildings, $stateParams.buildingId, false);
-                            */
-                            var deferred = $q.defer();
-                            
-                            console.log(Buildings.find().count());
-                            
                             $reactive(this).helpers({
-                              b : () => Buildings.findOne({_id: $stateParams.buildingId})
+                              b : () => Buildings.findOne({_id:  $stateParams.buildingId})
                             });
-                            
-                            var bb = this.b;
-                            if (!bb._id) {
-                                console.log('NOT_FOUND');
+                            //this.b = Buildings.findOne({},{_id: $stateParams.buildingId});
+                            var deferred = $q.defer();
+                            if (!this.b._id) {
                                 deferred.reject('NOT_FOUND');
                                 return deferred.promise;
                             }
-                            $rootScope.building = bb;
-                            return bb;
+                            return this.b;
                         }
                     ]
                 }
@@ -119,7 +111,7 @@ angular.module("super").config(['$urlRouterProvider', '$stateProvider', '$locati
                 templateUrl: 'client/flats/views/flats-list.ng.html',
                 controller: 'FlatsListCtrl',
                 resolve: {
-                    currentUser: ($q) => {
+                    cUser: ($q) => {
                         if (Meteor.userId() == null) {
                           return $q.reject('AUTH_REQUIRED');
                         }
@@ -134,7 +126,22 @@ angular.module("super").config(['$urlRouterProvider', '$stateProvider', '$locati
                 templateUrl: 'client/cashflows/views/cashflows-list.ng.html',
                 controller: 'CashflowsListCtrl',
                 resolve: {
-                    currentUser: ($q) => {
+                    cUser: ($q) => {
+                        if (Meteor.userId() == null) {
+                          return $q.reject('AUTH_REQUIRED');
+                        }
+                        else {
+                          return $q.resolve();
+                        }
+                    }
+                }
+            })
+            .state('cashflowimport', {
+                url: '/buildings/:buildingId/cashflowimport',
+                templateUrl: 'client/cashflows/views/cashflow-import.ng.html',
+                controller: 'CashflowImportCtrl',
+                resolve: {
+                    cUser: ($q) => {
                         if (Meteor.userId() == null) {
                           return $q.reject('AUTH_REQUIRED');
                         }
@@ -145,11 +152,11 @@ angular.module("super").config(['$urlRouterProvider', '$stateProvider', '$locati
                 }
             })
             .state('posts', {
-                url: '/buildings/:buildingId/posts',
+                url: '/buildings/:buildingId/posts/:postId',
                 templateUrl: 'client/posts/views/posts-list.ng.html',
                 controller: 'PostsListCtrl',
                 resolve: {
-                    currentUser: ($q) => {
+                    cUser: ($q) => {
                         if (Meteor.userId() == null) {
                           return $q.reject('AUTH_REQUIRED');
                         }
@@ -164,7 +171,7 @@ angular.module("super").config(['$urlRouterProvider', '$stateProvider', '$locati
                 templateUrl: 'client/projects/views/projects-list.ng.html',
                 controller: 'ProjectsListCtrl',
                 resolve: {
-                    currentUser: ($q) => {
+                    cUser: ($q) => {
                         if (Meteor.userId() == null) {
                           return $q.reject('AUTH_REQUIRED');
                         }
@@ -195,12 +202,25 @@ angular.module("super").config(['$urlRouterProvider', '$stateProvider', '$locati
             .state('logout', {
                 url: '/logout',
                 resolve: {
-                    logout: function($meteor, $state) {
-                        return Accounts.logout().then(function() {
-                            $state.go('login');
-                        }, function(err) {
-                            console.log('logout error - ', err);
+                    logout: function($state) {
+                        Meteor.logout(function() {
+                            $state.go('login', {}, {reload: true});
                         });
+                    }
+                }
+            })
+            .state('myflats', {
+                url: '/myflats',
+                templateUrl: 'client/flats/views/myflats.ng.html',
+                controller: 'MyFlatsCtrl',
+                resolve: {
+                    cUser: ($q) => {
+                        if (Meteor.userId() == null) {
+                          return $q.reject('AUTH_REQUIRED');
+                        }
+                        else {
+                          return $q.resolve();
+                        }
                     }
                 }
             });

@@ -1,99 +1,79 @@
 angular.module("super").controller("BuildingDetailsCtrl", ['$scope', '$stateParams'
-        , '$rootScope', '$state', 'uiGmapGoogleMapApi', '$translate','$reactive',
-    function($scope, $stateParams, $rootScope, $state, uiGmapGoogleMapApi, $translate, $reactive) {
+        , '$rootScope', '$state', '$translate','$reactive', 'building',
+    function($scope, $stateParams, $rootScope, $state, $translate, $reactive, building) {
 
         // rootscope.building is retrieved @ router.ng.js
         if ($stateParams.buildingId == "") {
-            $rootScope.building == null;
+            $scope.building == null;
             $state.go('buildings');
         }
-        // $rootScope.building = $scope.building;
-        
+        $scope.building = building;
+        $rootScope.building = building;
         $rootScope.loadMenu($stateParams.buildingId);
-
-        var latLng;
         var defLat = 41.0029403;
         var defLong = 28.9550193;
-        // google maps is ready
-        uiGmapGoogleMapApi.then(function(maps) {
-            if ($rootScope.building.location) {
-                if (!$rootScope.building.location.latitude) {
-                    $rootScope.building.location.latitude = defLat;
-                    $rootScope.building.location.longitude = defLong;
-                }
-                latLng = new google.maps.LatLng($rootScope.building.location.latitude,
-                    $rootScope.building.location.longitude);
-
-                $scope.marker = {
-                    id: $stateParams.buildingId,
-                    coords: {
-                        latitude: latLng.lat(),
-                        longitude: latLng.lng()
-                    },
-                    options: {
-                        draggable: true
-                    },
-                    events: {
-                        dragend: function(marker, eventName, args) {
-                            if (!$rootScope.building.location)
-                                $rootScope.building.location = {};
-
-                            $rootScope.building.location.latitude = marker.getPosition().lat();
-                            $rootScope.building.location.longitude = marker.getPosition().lng();
-                            $scope.save();
-                        }
-                    }
-                };
-
-                $scope.$watchCollection("building.location", function(newVal, oldVal) {
-                    if (_.isEqual(newVal, oldVal) || $rootScope.building == null) return;
-                    //$scope.$apply(function () {
-                    var ll = new google.maps.LatLng($rootScope.building.location.latitude,
-                        $rootScope.building.location.longitude);
-                    $scope.marker = {
-                        coords: {
-                            latitude: ll.lat(),
-                            longitude: ll.lng()
-                        }
-                    };
-                    $scope.map = {
-                        center: {
-                            latitude: ll.lat(),
-                            longitude: ll.lng()
-                        },
-                        zoom: 16,
-                        bounds: {}
-                    };
-                    //});
-                });
-
-            } else {
-                latLng = new google.maps.LatLng(defLat, defLong);
+        var latLng = { latitude: defLat, longitude: defLong};
+        $scope.formattedAddress = function() {
+            return $scope.building.name + ' ' + $scope.building.no + ' ' + $scope.building.street;
+        };
+        
+        $scope.createMarker = function(event) {
+            if (!$scope.building.location) {
+                $scope.building.location = { latitude: defLat, longitude: defLong};
             }
+            var lat = parseFloat($scope.building.location.latitude);
+            var lng = parseFloat($scope.building.location.longitude);
+            if (event) {
+                lat = event.latlng.lat;
+                lng = event.latlng.lng;
+            }
+            if (!$scope.marker) {            
+                $scope.marker = L.marker(new L.LatLng(lat, lng),{
+                    title: $scope.building.name,
+                    description: $scope.formattedAddress(),
+                    icon : L.mapbox.marker.icon({
+                        'marker-color': '2196F3',
+                        'marker-symbol': 'commercial'
+                    }),
+                    draggable: true
+                });
+                $scope.marker.addTo($scope.map);
+                $scope.marker.on('dragend', function(e) {
+                    var m = $scope.marker.getLatLng();
+                    $scope.building.location.latitude = m.lat;
+                    $scope.building.location.longitude = m.lng;
+                    $scope.save();
+                });
+            } else {
+                $scope.marker.setLatLng({ lat: lat, lng: lng});
+            }
+            $scope.map.panTo([lat, lng]);
+        };
 
-            $scope.map = {
-                center: {
-                    latitude: latLng.lat(),
-                    longitude: latLng.lng()
-                },
-                zoom: 13,
-                events: {
-                    click: function(mapModel, eventName, originalEventArgs) {
-                        /*if (!$rootScope.building)
-                            return;
-
-                        if (!$rootScope.building.location)
-                            $rootScope.building.location = {};
-
-                        $rootScope.building.location.latitude = originalEventArgs[0].latLng.lat();
-                        $scope.building.location.longitude = originalEventArgs[0].latLng.lng();
-                        //scope apply required because this event handler is outside of the angular domain
-                        $scope.$apply();*/
-                    }
-                }
-            };
+        L.mapbox.accessToken = 'pk.eyJ1IjoiYnVyb2NrIiwiYSI6ImNpaXUydm1oZjAwMG12N2x6ODNxdWdteHAifQ.7dFRESXwzGv7Bf5E7PLTZQ';
+        $scope.map = new L.mapbox.Map('map', 'burock.ok303cgl', {
+            center: [defLat, defLong],
+            zoom: 16,
+            doubleClickZoom: false,
+            trackResize: true
         });
-
+        $scope.map.on('layeradd', function(e) {
+           setTimeout(function(){ $scope.map.invalidateSize(true);}, 400);
+        }); 
+        $scope.map.on('load', function(e) {
+           setTimeout(function(){ $scope.map.invalidateSize(true);}, 400);
+        });
+        /*$scope.geocoderControl = L.mapbox.geocoderControl('mapbox.places', {
+            autocomplete: true
+        });
+        $scope.geocoderControl.addTo($scope.map);
+        $scope.geocoderControl.on('found', function(res) {
+        });*/
+        $scope.map.on('dblclick', function(e) {
+            $scope.createMarker(e);
+        });
+        $scope.createMarker();
+        
         $scope.save = function() {
             Buildings.update({_id: $stateParams.buildingId}, {
                 $set : {
@@ -105,7 +85,8 @@ angular.module("super").controller("BuildingDetailsCtrl", ['$scope', '$statePara
                     zip: $scope.building.zip,
                     town: $scope.building.town,
                     country: $scope.building.country,
-                    startDate: $scope.building.startDate
+                    startDate: $scope.building.startDate,
+                    location: $scope.building.location
                 }
             });
             $rootScope.showSimpleToast(this, $translate.instant('SAVED'));
@@ -114,57 +95,12 @@ angular.module("super").controller("BuildingDetailsCtrl", ['$scope', '$statePara
         $scope.deleteBuilding = function(building) {
             $rootScope.confirmDelete($translate.instant("BUILDING"), building.name).then(
                 function(data) {
-                    if (data) $meteor.call('removeBuilding', building._id).then(function(data) {
-                        console.log('success')
-                    }, function(err) {
-                        console.log(err)
-                    })
-                    $rootScope.building = null;
+                    if (data) Meteor.call('removeBuilding', building._id, function(data) {
+                    });
+                    $scope.building = null;
                     $state.go('buildings');
                 });
         };
-
-
-        $scope.formattedAddress = function() {
-            return $rootScope.building.name + ' ' + $rootScope.building.no + ' ' + $rootScope.building.street;
-        };
-
-    }
-]);
-
-angular.module("super").controller("MapController", ['$scope', '$rootScope', '$translate',
-    function($scope, $rootScope, $translate) {
-        // geocode the given address
-        var geocodeAddress = function(address, callback) {
-            var geocoder = new google.maps.Geocoder();
-            geocoder.geocode({
-                'address': address
-            }, function(results, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
-                    callback(results[0].geometry.location);
-                } else {
-                    $rootScope.showSimpleToast(this, "Sorry! Couldn't spot your address");
-                    console.log("Geocode was not successful for the following reason: " + status);
-                }
-            });
-        };
-
-
-        $scope.search = function(map) {
-            var address = $rootScope.building.no + ' ' + $rootScope.building.street + ' ' + $rootScope.building.county + ' ' + $rootScope.building.town + ', ' + $rootScope.building.zip;
-            $scope.map = map;
-
-            geocodeAddress(address, function(ll) {
-                if (!$rootScope.building.location)
-                    $rootScope.building.location = {};
-                $rootScope.showSimpleToast(this, $translate.instant('FOUND_MAP'))
-
-                // $scope.$apply(function() {
-                $rootScope.building.location.latitude = ll.lat();
-                $rootScope.building.location.longitude = ll.lng();
-                //});
-
-            });
-        }
+        
     }
 ]);

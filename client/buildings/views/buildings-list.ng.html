@@ -1,6 +1,7 @@
-<md-content layout-padding flex >
+<md-content class="my-height" layout-padding flex ng-cloak>
+      <loading ng-class="{ 'pin': buildingsCount>0 }" count="buildingsCount"></loading>
       <md-grid-list
-        md-cols-sm="1" md-cols-md="2" md-cols-gt-md="6"
+        md-cols-xs="2" md-cols-sm="3" md-cols-md="4" md-cols-gt-md="5" 
         md-row-height-gt-md="1:1" md-row-height="2:2"
         md-gutter="24px" md-gutter-gt-sm="12px">
         <md-grid-tile  md-ink-ripple="false" ng-click="goto(building._id)" md-rowspan="1"

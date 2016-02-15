@@ -1,49 +1,56 @@
 angular.module("super").controller("PostsListCtrl", ['$scope',
-    '$meteor', '$rootScope', '$state', '$stateParams', '$mdDialog', '$translate',
-    function($scope, $meteor, $rootScope, $state, $stateParams, $mdDialog, $translate) {
-
-        $scope.page = 1;
-        $scope.perPage = 5;
-        $scope.sort = {
-            date: -1
-        };
-        $scope.currentPostId = '';
+     '$rootScope', '$state', '$stateParams', '$mdDialog', '$translate','$reactive',
+    function($scope, $rootScope, $state, $stateParams, $mdDialog, $translate, $reactive) {
+        $reactive(this).attach($scope);
         if ($rootScope.building == null || $stateParams.buildingId == '') $state.go('buildings');
 
-        //$scope.posts = $meteor.collection(Posts).subscribe('posts',
-        //          { sort: $scope.sort, filter: $scope.params }, $rootScope.building._id);
+        $scope.perPage = 4;
+        $scope.currentPostId = '';
+        $scope.buildingId = $stateParams.buildingId;
+        $scope.sort = {
+                date: -1
+            };
+        $scope.page = 1;
 
-        $meteor.autorun($scope, function() {
-            $scope.$meteorSubscribe('posts', {
-                    onStop: notifyUser,
-                    limit: parseInt($scope.getReactively('perPage')),
-                    skip: (parseInt($scope.getReactively('page')) - 1) * parseInt($scope.getReactively('perPage')),
-                    sort: $scope.getReactively('sort')
-                }, $stateParams.buildingId)
-                .then(function(subscriptionHandle) {
-                    $scope.posts = $meteor.collection(function() {
-                        return Posts.find({}, {
-                          sort : $scope.getReactively('sort')
-                        });
-                    });
-                    $scope.postsCount = $meteor.object(Counts ,'numberOfPosts', false);
-                });
+        $scope.flip = function() {
+			  $scope.flipped = !$scope.flipped;
+		};
+
+        $scope.helpers({
+            postsCount: () => { return Counts.get('numberOfPosts'); },
+            posts: () => { return Posts.find({}, { sort: $scope.getReactively('sort') } ) },
+            post : () => {
+                return Posts.findOne($scope.getReactively('currentPostId'));
+            }
         });
-
+        
+        if ($stateParams.postId) {
+            $scope.currentPostId = $stateParams.postId;
+            $scope.filterPostId = $stateParams.postId;
+            $scope.$broadcast('postEvent',$scope.currentPostId);
+        };
+        
+        $scope.subscribe('posts', () => {
+            return [
+                {
+                    buildingId: $scope.getReactively('buildingId')
+                },
+                {
+                    limit: parseInt($scope.perPage),
+                    skip: (parseInt($scope.getReactively('page')) - 1) * parseInt($scope.perPage),
+                    sort: $scope.sort
+                }
+            ]
+        });
+        
       $scope.pageChanged = function(newPage) {
         $scope.page = newPage;
       };
 
-        function notifyUser(err) {
-            if (err)
-                $rootScope.showSimpleToast(err.reason);
-            else
-                $rootScope.showSimpleToast('posts subscription was stopped.');
-        };
-
         $scope.displayPost = function(postId) {
             $scope.currentPostId = postId;
             $scope.$broadcast('postEvent', postId);
+            $scope.flip();
         };
 
         $scope.addPost = function() {
@@ -52,15 +59,20 @@ angular.module("super").controller("PostsListCtrl", ['$scope',
                 'body': '',
                 'date': new Date()
             };
-            $scope.newPost.owner = $rootScope.currentUser._id;
-            $scope.newPost.by = $rootScope.currentUser;
+            $scope.newPost.owner = $rootScope.cUser._id;
+            $scope.newPost.by = $rootScope.cUser;
             $scope.newPost.buildingId = $stateParams.buildingId;
-            var newAddedPost = $scope.posts.save($scope.newPost).then(function(nofDocs) {
-                $scope.sort = { date : -1 };
-                $scope.displayPost(nofDocs[0]._id);
-            }, function(error) {
-                console.log("post create error", error);
-            });
+            
+            Posts.insert($scope.newPost, function(err, data) {
+            if (err)
+              console.log('Error inserting cashflow', err);
+            else {
+              $scope.sort = { date : -1 };
+              $scope.displayPost(data);
+            }
+              
+        });
+          
         };
 
     }

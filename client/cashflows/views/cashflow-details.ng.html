@@ -1,66 +1,69 @@
-<div layout="row" layout-sm="column"  ng-show="cashflow" class="md-whiteframe-4dp" layout-padding layout-margin>
-    <div flex ng-cloak class="md-inline-form">
-        <md-content>
-            <form name="cashflowForm" controller="CashflowDetailsCtrl">
-                <div layout layout-sm="column">
-                    <md-input-container>
-                        <label>{{ 'DESCRIPTION' | translate }}</label>
-                        <input ng-type="" ng-model="cashflow.description" required />
-                    </md-input-container>
-                    <md-input-container>
-                        <label>{{ 'FLAT' | translate }}</label>
-                         <md-select ng-model="cashflow.flat" placeHolder="{{ 'FLAT' | translate }}">
-                                <md-option ng-repeat="flat in flats" value="{{ flat._id }}">
-                                    {{ flat.no }} [{{ flat.flatOwner }}]
-                                </md-option>
-                        </md-select>
-                    </md-input-container>
-                </div>
-                <div layout layout-sm="column">
-                    <md-input-container>
-                        <label>{{ 'AMOUNT' | translate }}</label>
-                        <input ng-model="cashflow.amount" type="number" required />
-                        <span class="error" ng-show="cashflowForm.input.$error.required">{{ 'REQUIRED' | translate }}</span>
-                    </md-input-container>
-                    <md-input-container>
-                        <label>{{ 'CURRENCY' | translate }}</label>
-                        <md-select ng-model="cashflow.currency" placeHolder="{{ 'CURRENCY' | translate }}">
-                                <md-option>TRY</md-option>
-                                <md-option>USD</md-option>
-                                <md-option>EUR</md-option>
-                                <md-option>RUB</md-option>
-                        </md-select>
-                    </md-input-container>
-                </div>
-                <div layout layout-sm="column">
-                    <md-switch ng-model="cashflow.paid" aria-label="Paid" class="md-warn md-block">
-                        {{ 'PAID' | translate }}
-                    </md-switch>                
-                    <md-datepicker md-placeholder="{{ 'DATE' | translate }}" ng-model="cashflow.date" ></md-datepicker>
-                </div>
-                <div>
-                    <md-input-container>
-                        <label>{{ 'CASHFLOW_TYPE' | translate }}</label>
-                        <md-select ng-model="cashflow.type" placeHolder="{{ 'CASHFLOW_TYPE' | translate }}">
-                                <md-option value="dues">{{ 'DUES' | translate }}</md-option>
-                                <md-option value="payment">{{ 'PAYMENT' | translate }}</md-option>
-                                <md-option value="bill">{{ 'BILL' | translate }}</md-option>
-                                <md-option value="fee">{{ 'FEE' | translate }}</md-option>
-                        </md-select>
-                    </md-input-container>        
-                </div>
-                 <div layout="row" flex layout-align="end center">
-                        <md-button class="md-button md-accent" ng-click="saveCash()">
-                            <md-icon aria-label="{{ 'SAVE' | translate }}" md-font-set="material-icons">save</md-icon>
-                        </md-button>
-                        <!--<md-button class="md-icon-button md-accent" ng-click="resetCash()">
-                            <md-icon aria-label="{{ 'UNDO' | translate }}" md-font-set="material-icons">undo</md-icon>
-                        </md-button>-->
-                        <md-button class="md-button md-accent" ng-click="deleteCash(cashflow)">
-                            <md-icon aria-label="{{ 'DELETE' | translate }}" md-font-set="material-icons">delete</md-icon>
-                        </md-button>
-                </div>
-            </form>
+<md-content layout="row" layout-align="center" layout-margin layout-sm="column"  ng-show="cashflow">
+    <form name="cashflowForm" controller="CashflowDetailsCtrl">
+        <md-content
+          class="darkest md-whiteframe-1dp" 
+          layout="row" layout-padding layout-align="center">
+           <div>{{ cashflow.description }}</div>
         </md-content>
-    </div>
-</div>
+        <div layout="column" layout-gt-sm="row">
+            <md-input-container>
+                <label>{{ 'DESCRIPTION' | translate }}</label>
+                <input type="text" ng-model="cashflow.description" required />
+            </md-input-container>
+            <md-input-container>
+                <label>{{ 'FLAT' | translate }}</label>
+                 <md-select ng-model="cashflow.flat" placeHolder="{{ 'FLAT' | translate }}">
+                        <md-option ng-repeat="flat in flats" value="{{ flat._id }}">
+                            {{ flat.no }} [{{ flat.flatOwner }}]
+                        </md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+        <div layout="column" layout-gt-sm="row">
+            <md-input-container>
+                <label>{{ 'AMOUNT' | translate }}</label>
+                <input ng-model="cashflow.amount" type="number" required />
+                <span class="error" ng-show="cashflowForm.input.$error.required">{{ 'REQUIRED' | translate }}</span>
+            </md-input-container>
+            <md-input-container>
+                <label>{{ 'CURRENCY' | translate }}</label>
+                <md-select ng-model="cashflow.currency" placeHolder="{{ 'CURRENCY' | translate }}">
+                        <md-option>TRY</md-option>
+                        <!--<md-option>USD</md-option>
+                        <md-option>EUR</md-option>
+                        <md-option>RUB</md-option>-->
+                </md-select>
+            </md-input-container>
+        </div>
+        <div layout="column" layout-gt-sm="row">
+            <md-switch ng-model="cashflow.paid" aria-label="Paid" class="md-warn md-block" ng-change="saveCashflow(cashflow)">
+                {{ 'PAID' | translate }}
+            </md-switch>                
+            <md-datepicker md-placeholder="{{ 'DATE' | translate }}" ng-model="cashflow.date" ></md-datepicker>
+        </div>
+        <div layout="column" layout-gt-sm="row" flex>
+            <md-input-container flex="40">
+                <label>{{ 'CASHFLOW_TYPE' | translate }}</label>
+                <md-select ng-model="cashflow.type" ng-change="checkAmount()" placeHolder="{{ 'CASHFLOW_TYPE' | translate }}">
+                        <md-option value="dues">{{ 'DUES' | translate }}</md-option>
+                        <md-option value="payment">{{ 'PAYMENT' | translate }}</md-option>
+                        <md-option value="bill">{{ 'BILL' | translate }}</md-option>
+                </md-select>
+            </md-input-container> 
+            <md-input-container flex="40">
+                <label>{{ 'PROJECT' | translate }}</label>
+                <md-select ng-model="cashflow.projectId" placeHolder="{{ 'PROJECT' | translate }}">
+                        <md-option ng-repeat="project in projects" ng-value="project._id">{{ project.title }}</md-option>
+                </md-select>
+            </md-input-container> 
+        </div>
+         <div layout="row" flex layout-align="end center">
+                <md-button class="md-button md-accent" ng-click="saveCash()">
+                    <md-icon aria-label="{{ 'SAVE' | translate }}" md-font-set="material-icons">save</md-icon>
+                </md-button>
+                <md-button class="md-button md-accent" ng-click="deleteCash(cashflow)">
+                    <md-icon aria-label="{{ 'DELETE' | translate }}" md-font-set="material-icons">delete</md-icon>
+                </md-button>
+        </div>
+    </form>
+</md-content>

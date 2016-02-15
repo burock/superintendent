@@ -1,7 +1,7 @@
-<div layout="row" flex layout-sm="column" class="md-whiteframe-4dp" layout-padding layout-margin>
+<div layout="row" flex layout-sm="column">
      <div class="floating"  ng-show="isLoading">
           <md-progress-circular md-mode="indeterminate"></md-progress-circular>
      </div>
-     <div id="eventCalendar" ui-calendar="eventCtrl.calendarConfig" 
+     <div id="eventCalendar" ui-calendar="eventCtrl.calendarConfig" layout-margin
      ng-model="eventCtrl.eventSources" calendar="eventCalendar"></div> 
 </div>

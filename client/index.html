@@ -1,55 +1,128 @@
 <head>
-  <title translate="APPNAME">Super</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <base href="/">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="icon" href="/favicon.ico">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.9.5/chartist.min.css" rel="stylesheet">
+    <title translate="APPNAME">Super</title>
+    <base href="/">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.9.5/chartist.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+            <link rel="icon" href="/favicon.ico">
+    <script src='https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/v2.2.3/mapbox.css' rel='stylesheet' />
+    <link href="/index.css" rel="stylesheet">
+    <link href="/index.less" rel="stylesheet/less" type="text/css" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/less.js/2.5.1/less.min.js"></script>
 </head>
-<body ng-app="super">
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.9.5/chartist.min.js"></script>
-     <header>
-        <md-toolbar md-scroll-shrink>
-          <div layout-align="start center" class="md-toolbar-tools">
-            <img src="/img/s.svg.png" />
-            <h3>
-              SuperIntendent
-            </h3>
-            <span flex></span>
-            <md-button  ui-sref-active="active" ui-sref="dashboard"  ng-click="vacuum()">
-              <md-icon md-font-set="material-icons">dashboard</md-icon>
-              {{ 'DASHBOARD' | translate }}
-            </md-button>
-            <md-button  ui-sref-active="active" ui-sref="buildings" ng-click="vacuum()">
-              <md-icon md-font-set="material-icons">location_city</md-icon>
-              {{ 'BUILDINGS' | translate }}
-            </md-button>
-            <md-button  ui-sref-active="active" ui-sref="login" ng-hide="currentUser">
-              <md-icon md-font-set="material-icons">archive</md-icon>
-              {{ 'LOGIN' | translate }}
-            </md-button>
-            <md-button  ui-sref-active="active" ui-sref="register" ng-hide="currentUser">
-              <md-icon md-font-set="material-icons">create</md-icon>
-              {{ 'REGISTER' | translate }}
-            </md-button>          
-            <md-button  ui-sref-active="active" ui-sref="logout" ng-show="currentUser">
-              <md-icon md-font-set="material-icons">unarchive</md-icon>
-              {{ 'LOGOUT' | translate }}
-            </md-button>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartist/0.9.5/chartist.min.js"></script>
+    <header>
+        <md-toolbar>
+            <div layout-align="start center" class="md-toolbar-tools">
+                 <md-menu ng-hide="$mdMedia('gt-sm') || $state.current.name=='buildings' || $state.current.name=='dashboard' || $state.current.name=='myflats'">
+                    <md-button aria-label="Open buildings menu" 
+                        class="md-icon-button" ng-click="$mdOpenMenu($event)">
+                        <md-icon class="font-darkbrown" md-font-set="material-icons">menu</md-icon>
+                    </md-button>
+                    <md-menu-content class="darkbrown" width="4">
+                        <md-menu-item ng-repeat="section in sections" ng-show="cUser">
+                          <md-button ui-sref-active="active" 
+                            ui-sref="{{section.state}}({ buildingId : '{{ section.buildingId }}' })">
+                            <md-icon md-font-set="material-icons">{{section.icon}}</md-icon>
+                              {{section.name | translate }}
+                          </md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+                
+                <img width="62" height="48" src="/img/s.svg.png" />
+                <div ng-class="{ 'md-title' :  $mdMedia('gt-sm'), 'md-subhead' : $mdMedia('xs')}">
+                  Super<b>i</b>ntendent
+                </div>
+                <span flex></span>
+                <md-menu ng-hide="$mdMedia('gt-sm');">
+                    <md-button aria-label="Open phone interactions menu" 
+                        class="md-icon-button" ng-click="$mdOpenMenu($event)">
+                        <md-icon md-font-set="material-icons">menu</md-icon>
+                    </md-button>
+                    <md-menu-content width="4">
+                        <md-menu-item  ng-show="cUser">
+                          <md-button ui-sref-active="active" ui-sref="myflats"  ng-click="vacuum()">
+                              <md-icon md-font-set="material-icons">vpn_key</md-icon>
+                              {{ 'MY_FLATS' | translate }}
+                          </md-button>
+                        </md-menu-item>
+                        <md-menu-item  ng-show="cUser">
+                          <md-button ui-sref-active="active" ui-sref="dashboard"  ng-click="vacuum()">
+                              <md-icon md-font-set="material-icons">dashboard</md-icon>
+                              {{ 'DASHBOARD' | translate }}
+                          </md-button>
+                        </md-menu-item>
+                        <md-menu-item ng-show="cUser">
+                          <md-button ui-sref-active="active" ui-sref="buildings" ng-click="vacuum()">
+                              <md-icon md-font-set="material-icons">location_city</md-icon>
+                              {{ 'BUILDINGS' | translate }}
+                          </md-button>
+                        </md-menu-item>
+                        <md-menu-item ng-hide="cUser">
+                            <md-button   ui-sref-active="active" ui-sref="login" ng-hide="cUser">
+                                <md-icon md-font-set="material-icons">archive</md-icon>
+                                {{ 'LOGIN' | translate }}
+                            </md-button>
+                        </md-menu-item>
+                        <md-menu-item ng-hide="cUser">
+                          <md-button  ui-sref-active="active" ui-sref="register">
+                              <md-icon md-font-set="material-icons">create</md-icon>
+                              {{ 'REGISTER' | translate }}
+                          </md-button>
+                        </md-menu-item>
+                        <md-menu-item ng-show="cUser">
+                          <md-button   ui-sref-active="active" ng-click="vacuum()" ui-sref="logout">
+                              <md-icon md-font-set="material-icons">unarchive</md-icon>
+                              {{ 'LOGOUT' | translate }}
+                          </md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+                <div ng-show="$mdMedia('gt-sm');">
+                    <md-button ui-sref-active="active" ui-sref="myflats"  ng-click="vacuum()">
+                              <md-icon md-font-set="material-icons">vpn_key</md-icon>
+                              {{ 'MY_FLATS' | translate }}
+                    </md-button>
+                    <md-button  ui-sref-active="active" ui-sref="dashboard"  ng-show="cUser" ng-click="vacuum()">
+                        <md-icon md-font-set="material-icons">dashboard</md-icon>
+                        {{ 'DASHBOARD' | translate }}
+                    </md-button>
+                    <md-button ui-sref-active="active" ui-sref="buildings"  ng-show="cUser" ng-click="vacuum()">
+                        <md-icon md-font-set="material-icons">location_city</md-icon>
+                        {{ 'BUILDINGS' | translate }}
+                    </md-button>
+                    <md-button   ui-sref-active="active" ui-sref="login" ng-hide="cUser">
+                        <md-icon md-font-set="material-icons">archive</md-icon>
+                        {{ 'LOGIN' | translate }}
+                    </md-button>
+                    <md-button  ui-sref-active="active" ui-sref="register" ng-hide="cUser">
+                        <md-icon md-font-set="material-icons">create</md-icon>
+                        {{ 'REGISTER' | translate }}
+                    </md-button>
+                    <md-button   ui-sref-active="active" ng-click="vacuum()" ui-sref="logout" ng-show="cUser">
+                        <md-icon md-font-set="material-icons">unarchive</md-icon>
+                        {{ 'LOGOUT' | translate }}
+                    </md-button>
+                </div>
             </div>
         </md-toolbar>
-      </header>
-      <md-content layout="row" ng-controller="NavCtrl as vm">
-            <md-sidenav md-scroll-shrink class="md-sidenav-left gray-green" ng-show="building"
-              md-component-id="left"  md-is-locked-open="$mdMedia('gt-md')">
-                <ul class="side-menu {{section.customclass}}">
-                  <li ng-repeat="section in sections" class="parent-list-item"
-                      ng-class="{'parentActive' : vm.isSectionSelected(section)}">
+    </header>
+    <div layout="row" style="height: 100%">
+    <md-content layout="column" layout-gt-xs="row" ng-controller="NavCtrl as vm">
+        <md-sidenav class="md-sidenav-left darkest" ng-show="building"
+            md-component-id="building-nav-left"  
+            md-is-locked-open="$mdMedia('gt-sm')" style="height:auto">
+            <ul class="side-menu {{section.customclass}}">
+                <li ng-repeat="section in sections" class="parent-list-item"
+                    ng-class="{'parentActive' : vm.isSectionSelected(section)}">
                     <menu-link building="building" section="section" ng-if="section.type === 'link'"></menu-link>
-                  </li>
-                </ul>
-            </md-sidenav>
-            <md-content ui-view layout="column" flex>
-            </md-content>
-      </md-content>
+                </li>
+            </ul>
+        </md-sidenav>
+    </md-content>
+    <md-content ui-view layout="column" flex></md-content>
+    </div>
 </body>

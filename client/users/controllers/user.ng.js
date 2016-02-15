@@ -1,6 +1,6 @@
-angular.module("super").controller("UserCtrl", ['$meteor', '$state','$scope',
-  function ($meteor, $state, $scope) {
-    $scope.user = $meteor.getUser();
+angular.module("super").controller("UserCtrl", ['$state','$scope',
+  function ($state, $scope) {
+    $scope.user = Meteor.user();
  
     $scope.saveUser = function () {
         Meteor.user.save();

@@ -1,0 +1,43 @@
+<md-bottom-sheet class="md-grid" layout="column" ng-cloak>
+    <input type="hidden" ng-model="filterCashflowId" />
+    <md-list flex layout="row" layout-align="start center">
+        <md-list-item flex="100">
+          <div layout="row" >
+            <md-input-container class="md-block">
+              <label>{{ 'SEARCH_WORD' | translate }} </label>
+              <md-icon md-font-set="material-icons"> search </md-icon>
+              <input ng-model="filterCashflows" />
+            </md-input-container>
+            <md-input-container>
+                <label>{{ 'PAID' | translate }}</label>
+                <md-select ng-model="filterPaid" ng-change="">
+                  <md-option value="">{{ 'ALL' | translate }}</md-option>
+                  <md-option value="false">{{ 'UNPAID' | translate }}</md-option>
+                  <md-option value="true">{{ 'PAID' | translate }}</md-option>
+                </md-select>
+                <br>
+            </md-input-container>
+            <md-input-container>
+                <label>{{ 'FLAT' | translate }}</label>
+                <md-select ng-model="filterFlat" ng-change="">
+                  <md-option ng-repeat="flat in flats" ng-value="flat._id">{{ flat.no }}</md-option>
+                </md-select>
+                <br>
+            </md-input-container>
+            <md-input-container>
+              <md-button class="md-icon-button my-button " ng-click="clearSearch()">
+                  <md-tooltip direction="top">
+                              {{ 'CLEAR_SEARCH' | translate }}
+                  </md-tooltip>
+                  <md-icon md-font-set="material-icons">healing</md-icon>
+              </md-button><br>
+            </md-input-container>
+            <md-input-container>
+              <md-button class="md-icon-button my-button " ng-click="hideMe();">
+                  <md-icon md-font-set="material-icons">keyboard_arrow_down</md-icon>
+              </md-button><br>
+            </md-input-container>
+          </div>          
+        </md-list-item>
+    </md-list>
+</md-bottom-sheet>

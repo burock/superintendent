@@ -1,0 +1,57 @@
+<md-content  layout="column" layout-gt-sm="row" layout-padding
+    layout-margin layout-align="center start"  ng-class="{ 'safari-fix' : (isBig == false) }">
+    <div layout="column" layout-padding layout-margin flex-gt-sm="auto"
+        class="darkest my-flats" ng-repeat="f in flats"  layout-align="center start">
+      <div layout="column" layout-align="center center" >
+        <div class='md-headline'>{{ f.building[0].name }} {{ 'FLAT' | translate}}:{{ f.no }}</div>
+        <div class="md-subhead font-yellow">{{ f.building[0].no}}@ {{ f.building[0].street }}</div>
+      </div>
+      <hr class="dotted--hr" />
+        <div layout="column" layout-gt-sm="row" layout-margin layout-align="start start">
+          <div layout="column">
+              <div class="md-title font-flat-title">{{ 'BALANCE' | translate }}</div>
+              <table class="md-table md-table--bordered" style="width:auto;height:auto;">
+                <tr>
+                  <td>{{ 'PAID' | translate }}</td>
+                  <td align="right">{{ f.totalPaid | currency:"&#8378;"  }}</td>
+                </tr>  
+                <tr>
+                  <td>{{ 'DEBTS' | translate }}</td>
+                  <td align="right">{{ (-1 * f.totalDebt) | currency:"&#8378;"  }}</td>
+                </tr>  
+            </table>
+          </div>
+          <div layout="column" ng-show="f.unpaidCashflows.length>0" flex style="height: 100%">
+            <div class="md-title font-flat-title">{{ 'DEBTS' | translate }}</div>
+            <table class="md-table md-table--bordered" style="width:auto;height:auto;">
+                <tr ng-repeat="cash in f.unpaidCashflows">
+                  <td>{{ cash.description }}</td>
+                  <td align="right">{{ (-1*cash.amount) | currency:"&#8378;" }}</td>
+                </tr>  
+            </table>
+          </div>
+        </div>  
+        <hr class="dotted--hr">
+        <div layout="column" layout-margin layout-align="start start">
+          <div layout="row" layout-align="start center">
+            <div class="md-title font-flat-title">{{ 'POSTS' | translate }}</div>
+            <span flex></span>
+            <md-button href="" class="md-fab md-mini" ng-click="addPost(f)">
+                <md-icon md-font-set="material-icons" 
+                    class="font-white">add</md-icon>
+            </md-button>
+          </div>
+          <table width="100%" class="md-table md-table--light-bordered">
+            <tbody>
+              <tr ng-repeat="p in f.posts" >
+                <td>
+                  <h3 style="color: #efefef">{{ p.title }}</h3>
+                  <p class="myflats-post-body">{{ p.body }}</p>
+                </td>
+                
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+</md-content>

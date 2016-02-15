@@ -1,0 +1,87 @@
+<md-content  class="darkest md-whiteframe-1dp" layout="column" layout-padding >
+    <div class="floating font-white"  ng-show="isLoading">
+          <md-progress-circular md-diameter="200px" class="md-warn md-hue-3" md-mode="indeterminate"></md-progress-circular>
+    </div>
+    <div  layout="column" ng-hide="fileUploaded">
+      <p>{{ 'IMPORT_REMARK' | translate }}</p>
+      <div layout-align="start center" layout="row">
+          <div>
+          <md-button class="md-fab">
+            <label for="file-input">
+              <md-icon md-font-set="material-icons">note_add</md-icon>
+             </label>
+             <md-tooltip md-direction="bottom">
+                    {{ 'IMPORT_REMARK' | translate }}
+             </md-tooltip>
+          </md-button>
+          <input id="file-input" ng-model="fileName" onchange="angular.element(this).scope().getFileName(this.files)" type="file" style="display: none;">
+          </div>
+          <p>{{ fileName }}</p>
+          <div>
+          <md-icon md-font-set="material-icons" class="font-white">chevron_right</md-icon>
+          </div>
+          <div>
+          <md-button class="md-fab" ng-disabled="isLoading" ng-click="startImport()">
+              <md-tooltip md-direction="bottom">
+                    {{ 'IMPORT' | translate }}
+              </md-tooltip>
+              <md-icon md-font-set="material-icons">file_upload</md-icon>
+          </md-button>
+          </div>
+        </div>
+    </div>
+   
+    <div ng-show="fileUploaded" style="height:500px;width:100%">
+        <div layout="row" ng-hide="importReady">
+            <md-button class="md-fab" ng-click="fileUploaded=false;">
+                  <md-icon md-font-set="material-icons">refresh</md-icon>
+            </md-button>
+            <md-input-container>
+                <label style="color:#efefef;">Date Format</label>
+                <input ng-model="dateFormat" class="font-white" type="text" style="color:#efefef;">
+            </md-input-container>
+            <md-button class="md-fab" ng-click="finalImport()">
+                  <md-icon md-font-set="material-icons">play_arrow</md-icon>
+            </md-button>
+        </div>
+        <div layout="row" ng-show="importReady" layout-align="start center">
+            <md-button class="md-fab" ng-disabled="isLoading || importDone" ng-click="import()">
+                  <md-icon md-font-set="material-icons">check</md-icon>
+            </md-button>
+            <div layout="row" ng-show="importDone" layout-align="start center">
+                <div>{{ 'CASHIMP_DONE' | translate }}</div>
+                <md-button class="md-accent" ui-sref="cashflows({buildingId: buildingId})">
+                    {{ 'CASHFLOWS' | translate }}
+                </md-button>
+            </div>
+        </div>
+        <table class="font-white md-table md-table--bordered md-caption" >
+          <thead>
+            <th><md-icon md-font-set="material-icons" class="md-icon-button">select_all</md-icon></th>
+            <th  ng-if="lines[0].columns" ng-repeat="col in lines[0].columns track by $index">
+                <md-select aria-label="..." ng-model="column" ng-change="labelColumn($index, this)">
+                    <md-option></md-option>
+                    <md-option value='id'>id</md-option>
+                    <md-option value='amount'>{{ 'AMOUNT' | translate }}</md-option>
+                    <md-option value='date'>{{ 'DATE' | translate }}</md-option>
+                    <md-option value='description'>{{ 'DESCRIPTION' | translate }}</md-option>
+                </md-select>
+             </th>          
+             <th  ng-if="!lines[0].columns" ng-repeat="(key,value) in lines[0] track by $index">
+                 {{ key }}
+             </th>          
+          </thead>
+          <tbody>
+          <tr ng-repeat="line in lines  track by $index">
+             <td><md-checkbox  aria-label="..."  ng-checked="exists($index, selected)" ng-click="toggle($index, selected)"></md-checkbox></td>
+             <td ng-if="line.columns" ng-repeat="col in line.columns">
+                {{ col.value }}
+             </td>
+             <td ng-if="!line.columns" ng-repeat="(key,value) in line">
+                 {{ value }}
+             </td>
+          </tr>
+          </tbody>
+        </table>
+    </div>
+</md-content>

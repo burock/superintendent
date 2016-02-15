@@ -1,30 +1,28 @@
-<div layout="row" layout-sm="column" ng-show="post" class="md-whiteframe-4dp" layout-padding layout-margin>
-    <div flex ng-cloak class="md-inline-form" >
-        <md-content>
-            <form name="postForm">
-                <div layout layout-sm="column">
-                    <md-input-container flex>
-                        <label>{{ 'TITLE' | translate }}</label>
-                        <input ng-type="text" ng-model="post.title" required />
-                    </md-input-container>
-                </div>
-                <div layout layout-sm="column" flex>
-                    <md-input-container flex>
-                        <textarea  aria-label="{{ 'TEXT' | translate }}" ng-model="post.body" columns="1"></textarea>
-                    </md-input-container>
-                </div>
-                <div layout="row" flex layout-align="end center">
-                         <md-button class="md-button md-accent" ng-click="savePost()">
-                            <md-icon aria-label="{{ 'SAVE' | translate }}" md-font-set="material-icons">save</md-icon>
-                        </md-button>
-                        <!--<md-button class="md-button md-accent" ng-click="resetPost()">
-                            <md-icon aria-label="{{ 'UNDO' | translate }}" md-font-set="material-icons">undo</md-icon>
-                        </md-button>-->
-                        <md-button class="md-button md-accent" ng-click="deletePost(post)">
-                            <md-icon aria-label="{{ 'DELETE' | translate }}" md-font-set="material-icons">delete</md-icon>
-                        </md-button>
-                </div>
-            </form>
+<div layout="row" layout-sm="column" ng-show="post" layout-align="center"  layout-padding>
+    <form name="postForm" layout-padding>
+        <md-content
+          class="darkest md-whiteframe-1dp" 
+          layout="row" layout-padding layout-align="center">
+           <div>{{ post.title }}</div>
         </md-content>
-    </div>
+        <div layout layout-sm="column">
+            <md-input-container flex>
+                <label>{{ 'TITLE' | translate }}</label>
+                <input type="text" ng-model="post.title" required />
+            </md-input-container>
+        </div>
+        <div layout layout-sm="column" flex>
+            <md-input-container flex>
+                <textarea  aria-label="{{ 'TEXT' | translate }}" ng-model="post.body" columns="1"></textarea>
+            </md-input-container>
+        </div>
+        <div layout="row" flex layout-align="end center">
+                 <md-button class="md-button md-accent" ng-click="savePost()">
+                    <md-icon aria-label="{{ 'SAVE' | translate }}" md-font-set="material-icons">save</md-icon>
+                </md-button>
+                <md-button class="md-button md-accent" ng-click="deletePost(post)">
+                    <md-icon aria-label="{{ 'DELETE' | translate }}" md-font-set="material-icons">delete</md-icon>
+                </md-button>
+        </div>
+    </form>
 </div>

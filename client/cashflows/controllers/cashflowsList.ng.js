@@ -1,99 +1,149 @@
 angular.module("super").controller("CashflowsListCtrl", ['$scope', 
-    '$meteor', '$rootScope', '$state', '$stateParams','$mdDialog','$translate',
-function ($scope, $meteor, $rootScope, $state, $stateParams, $mdDialog, $translate) {
- 
+    '$rootScope', '$state', '$stateParams','$mdDialog','$translate','$reactive','$mdBottomSheet',
+function ($scope, $rootScope, $state, $stateParams, $mdDialog, $translate, $reactive, $mdBottomSheet) {
+      $reactive(this).attach($scope);
+      if ($rootScope.building==null || $stateParams.buildingId == '') $state.go('buildings');
+      $scope.cashflowId = $stateParams.cashflowId;
+      $scope.currentCashflowId= '';
+      $scope.buildingId = $stateParams.buildingId;
       $scope.sort = { date : -1 };
       $scope.page = 1;
-      $scope.perPage = 5;
+      $scope.filterPaid = '';
+      $scope.filterFlat = '';
       $scope.filterCashflows = '';
       $scope.filterCashflowId = '';
+      $scope.perPage = 5;
+
+      $scope.flip = function() {
+			  $scope.flipped = !$scope.flipped;
+		  };
       
+      $scope.helpers({
+          flats: () => {
+              return Flats.find({buildingId: $scope.getReactively('buildingId') }, { sort: { no: 1}});
+          },
+          cashflowsCount: () => { return Counts.get('numberOfCashflows'); },
+          cashflows: () => { 
+            return Cashflows.find({} , { sort: $scope.getReactively('sort')} ) 
+          },
+          cashflow : () => {
+                return Cashflows.findOne($scope.getReactively('currentCashflowId'));
+            }
+      });
+
       if ($stateParams.cashflowId) {
-        $scope.filterCashflowId = $stateParams.cashflowId;
-        try {
-          $scope.filterCashflows = $scope.cashflows.findOne().description;
-        } catch (e) {
-          console.log(e);
-        }
+            $scope.currentCashflowId = $stateParams.cashflowId;
+            $scope.filterCashflowId = $stateParams.cashflowId;
+           // $scope.$broadcast('cashflowEvent',$scope.currentCashflowId);
       }
+      
       $scope.clearSearch = function() {
         $scope.filterCashflows = '';
         $scope.filterCashflowId = '';
+        $scope.filterPaid = '';
+        $scope.filterFlat = '';
+        $scope.hideMe();
       }
       
-      $scope.currentCashflowId = '';
-      if ($rootScope.building==null || $stateParams.buildingId == '') $state.go('buildings');
+      $scope.hideMe = function() {
+        $mdBottomSheet.hide();
+      }
       
-      $meteor.autorun($scope, function() {     
-        $scope.$meteorSubscribe('cashflows',
+      
+      $scope.subscribe('flats', () => {
+            return [
+                 {buildingId: $scope.getReactively('buildingId') },
+                  { sort : { no : 1 } }
+            ]
+      });
+        
+      $scope.subscribe('projects', () => {
+        return [
+          {
+            buildingId: $scope.buildingId, 
+            projectId: '',
+            filter: ''
+          }
+        ]
+      });
+      
+      $scope.subscribe('cashflows', () => {
+          return [
               {
-                onStop: notifyUser, 
-                limit: parseInt($scope.getReactively('perPage')),
-                skip: (parseInt($scope.getReactively('page')) - 1) * parseInt($scope.getReactively('perPage')),
-                sort: $scope.getReactively('sort'), 
-              }, { buildingId: $stateParams.buildingId, 
-                   cashflowId: $scope.getReactively('filterCashflowId'),
-                   filter: $scope.getReactively('filterCashflows')} )
-              .then(function(subscriptionHandle){
-                $scope.cashflows =$meteor.collection(function() {
-                  return Cashflows.find({}, {
-                    sort : $scope.getReactively('sort')
-                  });
-                });
-                $scope.cashflowsCount = $meteor.object(Counts ,'numberOfCashflows', false);
-        });   
+                buildingId: $stateParams.buildingId ,
+                cashflowId:$scope.getReactively('filterCashflowId'),
+                filter: $scope.getReactively('filterCashflows'),
+                filterPaid : $scope.getReactively('filterPaid'),
+                filterFlat : $scope.getReactively('filterFlat')
+              },
+              {
+                limit: parseInt($scope.perPage),
+                skip: (parseInt($scope.getReactively('page')) - 1) * parseInt($scope.perPage),
+                sort: $scope.getReactively('sort')
+              }
+          ]
       });
       
       $scope.pageChanged = function(newPage) {
         $scope.page = newPage;
       };
                 
-      function notifyUser(err) {
-            if (err)
-              $rootScope.showSimpleToast(err.reason);
-            else
-              $rootScope.showSimpleToast('cashflows subscription was stopped.');
-      };
-      
-      $scope.displayCashflow = function (cashflowId) {
+      $scope.displayCashflow = function (cashflowId) { 
         $scope.currentCashflowId = cashflowId;
-        $scope.$broadcast('cashflowEvent', cashflowId);
+        $scope.flip();
+        $scope.checkAmount();
       };
       
+       $scope.openSearchSheet = function($event) {
+            $mdBottomSheet.show({
+              templateUrl: 'client/cashflows/views/search-sheet-tmpl.ng.html',
+              clickOutsideToClose: true,
+              escapeToClose: true,
+              targetEvent: $event,
+              preserveScope: true,
+              scope: $scope,
+              disableParentScroll: true
+            }).then(function(clickedItem) {
+              console.log(clickedItem);
+              
+            });
+        }    
       $scope.addnew = function () {
         $scope.newCashflow = {
             'description' : $translate.instant('NEW'),
             'amount': 0,
             'currency' : $rootScope.building.currency,
             'date' : new Date(),
-            'captureDate' : new Date()
+            'captureDate' : new Date(),
+            'type' : 'dues'
         };
-        $scope.newCashflow.owner = $rootScope.currentUser._id;
+        $scope.newCashflow.owner = $rootScope.cUser._id;
         $scope.newCashflow.buildingId = $stateParams.buildingId;
-        
-        var newAddedCashflow = $scope.cashflows.save($scope.newCashflow).then(function (nofDocs) {
-            $scope.sort = { date : -1 };
-            $scope.displayCashflow(nofDocs[0]._id);
-          }, function(error) {
-              console.log("cashflow create error", error);
-          });
+        Cashflows.insert($scope.newCashflow, function(err, data) {
+            if (err)
+              console.log('Error inserting cashflow', err);
+            else {
+              $scope.sort = { date : -1 };
+              $scope.filterCashflowId = data;
+              $scope.displayCashflow(data);
+            }
+              
+        });
+          
       };
       
-}]).directive('cashflows', function () {
-      return {
-          restrict: 'E',
-          templateUrl: 'client/cashflows/views/cashflows-list.ng.html',
-          controller: 'CashflowsListCtrl',
-          link: function ($scope, element, attrs) {
-              element.on('click', function () {
-                  //element.html('You clicked me!');
-              });
-              element.on('mouseenter', function () {
-                  //element.css('background-color', 'yellow');
-              });
-              element.on('mouseleave', function () {
-                  //element.css('background-color', 'white');
-              });
-          }
-      };
-});
+      $scope.checkAmount = function() {
+            if ($scope.cashflow)
+                if ($scope.cashflow.type=='payment'||$scope.cashflow.type=='bill') {
+                    if ($scope.cashflow.amount>0) {
+                        $scope.cashflow.amount *= -1; 
+                        $scope.dirty = true;
+                    }
+                } else {
+                    if  ($scope.cashflow.amount<0) {
+                        $scope.dirty = true;
+                        $scope.cashflow.amount *= -1; 
+                    }
+                }
+        };
+}]); 

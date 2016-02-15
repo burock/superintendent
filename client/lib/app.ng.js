@@ -1,34 +1,49 @@
 'use strict';
 
+function onReady() {
+  angular.bootstrap(document, ['super'], {
+    strictDi: true
+  });
+}
+ 
+if (Meteor.isCordova)
+  angular.element(document).on("deviceready", onReady);
+else
+  angular.element(document).ready(onReady);
+  
 angular.module('super', ['angular-meteor', 'ui.router', 'ngMaterial',
-    'uiGmapgoogle-maps', 'ngCookies', 'pascalprecht.translate',
+    'ngCookies', 'pascalprecht.translate',
     'angularUtils.directives.dirPagination', 'ui.calendar'
 ]);
-angular.module('super').config(function(uiGmapGoogleMapApiProvider) {
-    uiGmapGoogleMapApiProvider.configure({
-        key: 'AIzaSyCLbGNtXqwvk1N_-c_CFPL-Kdq-mFkG_mo',
-        v: '3.20',
-    });
-});
 angular.module('super').config(['$translateProvider',
     function($translateProvider) {
 
         $translateProvider
+            .useLoaderCache(true)
             .useStaticFilesLoader({
                 prefix: '/locale/',
                 suffix: '.json'
             })
-            .registerAvailableLanguageKeys(['en','tr','al'], {
-                'en': 'en',
+            .registerAvailableLanguageKeys(['al','en','tr','de'], {
+                'al'  : 'al',
+                'en'  : 'en',
                 'tr'  : 'tr',
-                'al'  : 'al'
+                'de'  : 'de'
             })
             .preferredLanguage('tr')
+            //.determinePreferredLanguage()
             .fallbackLanguage('en');
+            
         $translateProvider.useSanitizeValueStrategy('escape');
 
     }
 ]);
+
+angular.module('super').config(function($mdDateLocaleProvider) {
+    $mdDateLocaleProvider.formatDate = function(date) {
+       return moment(date).format('DD/MM/YYYY');
+    };
+});
 
 angular.module('super')
     .factory('menu', [
@@ -102,6 +117,7 @@ angular.module("super")
                 }
                 return selected;
             }
+            
         }
     ]).filter('nospace', function() {
         return function(value) {
@@ -140,14 +156,14 @@ angular.module('super').config(function($mdThemingProvider) {
             'default': '800',
         }).accentPalette('deep-orange', {
             'default': '900'
-        }).backgroundPalette('grey', {
+        })/*.backgroundPalette('grey', {
             'default': '50'
-        });
+        })*/;
 });
 
 angular.module('super').run(
 
-    function($rootScope, $state, $mdToast, $translate, $mdDialog) {
+    function($rootScope, $state, $mdToast, $translate, $mdDialog, $mdMedia, $mdSidenav) {
 
         $rootScope.showSimpleToast = function(scope, message) {
             $mdToast.show(
@@ -164,23 +180,17 @@ angular.module('super').run(
 
         $rootScope.$on('$stateChangeError',
             function(event, toState, toParams, fromState, fromParams, error) {
-                // We can catch the error thrown when the $requireUser promise is rejected
-                // and redirect the user back to the main page
                 console.warn( "Route failed!" ,error);
-                // Warning: On error, the $routeParams are NOT updated; however,
-                // the $route.current.params and $route.current.pathParams ARE
-                // updated to reflect even the failed route.
                 if (error === 'AUTH_REQUIRED') {
                     $state.go('login');
                 } else {
-                    if ($rootScope.currentUser) {
+                    if (Meteor.user()) {
                         $state.go('buildings');
                     } else
                         $state.go('login');
                 }
             });
-            
-    
+
         $rootScope.building = null;
         $rootScope.words = [];
         $translate(['WOULD_U_LIKE_TO_DELETE_THIS', 'PROJECT', 'BUILDING',
@@ -192,11 +202,11 @@ angular.module('super').run(
 
         $rootScope.confirmDelete = function(what, description) {
             var confirm = $mdDialog.confirm()
-                .title($rootScope.words["WOULD_U_LIKE_TO_DELETE_THIS"] + ' ' + what.toLowerCase() + '?')
+                .title($rootScope.words["WOULD_U_LIKE_TO_DELETE_THIS"] + ' : ' + what.toLowerCase() + ' ' + description + '?')
                 .ok($rootScope.words["YES"])
                 .cancel($rootScope.words["NO"]);
             return $mdDialog.show(confirm).then(function() {
-                var s = $rootScope.words["U_DELETED"] + what.toLowerCase() + ' \'' + description + '\'';
+                var s = $rootScope.words["U_DELETED"] + ' ' + what.toLowerCase() + ' \'' + description + '\'';
                 $rootScope.showSimpleToast($rootScope, s);
                 return true;
             }, function() {
@@ -204,6 +214,19 @@ angular.module('super').run(
                 return false;
             });
         }
+        
+        $rootScope.confirmIt = function(what) {
+            var confirm = $mdDialog.confirm()
+                .title(what)
+                .ok($rootScope.words["YES"])
+                .cancel($rootScope.words["NO"]);
+            return $mdDialog.show(confirm).then(function() {
+                return true;
+            }, function() {
+                return false;
+            });
+        }
+        
         $rootScope.loadMenu = function(buildingId) {
             $rootScope.sections = [];
             $rootScope.sections.push({
@@ -211,41 +234,78 @@ angular.module('super').run(
                 type: 'link',
                 buildingId: buildingId,
                 state: 'buildingDetails',
-                icon: 'business'
+                icon: 'business',
+                customclass : 'font-white'
             }, {
                 name: 'FLATS',
                 type: 'link',
                 buildingId: buildingId,
                 state: 'flats',
-                icon: 'view_headline'
-            }, {
-                name: 'CASHFLOWS',
-                state: 'cashflows',
-                buildingId: buildingId,
-                type: 'link',
-                icon: 'local_atm'
-            }, {
-                name: 'REMINDERS',
-                state: 'reminders',
-                buildingId: buildingId,
-                type: 'link',
-                icon: 'notifications'
-            }, {
-                name: 'POSTS',
-                state: 'posts',
-                buildingId: buildingId,
-                type: 'link',
-                icon: 'forum'
+                icon: 'weekend',
+                customclass : 'font-white'
             }, {
                 name: 'PROJECTS',
                 state: 'projects',
                 buildingId: buildingId,
                 type: 'link',
-                icon: 'lightbulb_outline'
+                icon: 'format_paint',
+                customclass : 'font-white'
+            }, {
+                name: 'CASHFLOWS',
+                state: 'cashflows',
+                buildingId: buildingId,
+                type: 'link',
+                icon: 'local_atm',
+                customclass : 'font-white'
+            }, {
+                name: 'REMINDERS',
+                state: 'reminders',
+                buildingId: buildingId,
+                type: 'link',
+                icon: 'notifications',
+                customclass : 'font-white'
+            }, {
+                name: 'POSTS',
+                state: 'posts',
+                buildingId: buildingId,
+                type: 'link',
+                icon: 'forum',
+                customclass : 'font-white'
+            }, {
+                name: 'LEGAL',
+                state: 'legal',
+                buildingId: buildingId,
+                type: 'link',
+                icon: 'gavel',
+                customclass : 'font-white'
             });
         };
-        $rootScope.$on('$translateChangeSuccess', function() {
+        $rootScope.$on('$translateChangeSuccess', function(err, data) {
+            
            // console.log("here...");
         });
-
+        $rootScope.$on('$translateChangeError', function(err, data,d) {
+           console.log(data);
+        });
+        
+        if (Meteor.user()) {
+            $rootScope.cUser = Meteor.user();    
+        }
+        
+        Accounts.onLogin(function() {
+            $rootScope.cUser = Meteor.user();
+        });
+        
+        $rootScope.toggleMenu = function(navId) {
+            $mdSidenav(navId).toggle();
+        };
+        $rootScope.closeMenu = function() {
+            console.log('s:');
+            if (!$mdMedia('gt-sm')) {
+                console.log('closed:');
+                $mdSidenav('building-nav-left').close();
+            }
+        };
+        $rootScope.$mdMedia = $mdMedia;
+        $rootScope.$state = $state;
     });

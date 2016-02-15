@@ -1,5 +1,5 @@
-angular.module("super").controller("LoginCtrl", ['$meteor', '$state', '$rootScope', '$translate',
-  function ($meteor, $state, $rootScope, $translate) {
+angular.module("super").controller("LoginCtrl", ['$state', '$rootScope', '$translate',
+  function ( $state, $rootScope, $translate) {
     var vm = this;
     
     vm.credentials = {
@@ -10,8 +10,11 @@ angular.module("super").controller("LoginCtrl", ['$meteor', '$state', '$rootScop
     vm.error = '';
  
     vm.changeLang = function() {
-      console.log("changed lang");
+      try {
       $translate.use(vm.credentials.profile.language);
+      } catch(e) {
+        console.log('error',e);
+      }
     }
     
     this.login = () => {

@@ -1,5 +1,5 @@
-angular.module("super").controller("ResetCtrl", ['$meteor', '$state',
-  function ($meteor, $state) {
+angular.module("super").controller("ResetCtrl", ['$state',
+  function ($state) {
     var vm = this;
  
     vm.credentials = {
