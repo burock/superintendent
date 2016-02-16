@@ -1,21 +1,5 @@
-     ,-----.,--.                  ,--. ,---.   ,--.,------.  ,------.
-    '  .--./|  | ,---. ,--.,--. ,-|  || o   \  |  ||  .-.  \ |  .---'
-    |  |    |  || .-. ||  ||  |' .-. |`..'  |  |  ||  |  \  :|  `--, 
-    '  '--'\|  |' '-' ''  ''  '\ `-' | .'  /   |  ||  '--'  /|  `---.
-     `-----'`--' `---'  `----'  `---'  `--'    `--'`-------' `------'
-    ----------------------------------------------------------------- 
-TODOS:
-X Login screen--change it -- can't register, too
-X Warning box for payments
-* Email verify
-X CSV import for cashflows
+Super Intendent...
 
-
-TODOS on Dashboard:
-
--- Dashboard
-    * Agenda view
-
--- bugs
+Manage your buildings, import your cashflows, add reminders, track your projects.
 
 
